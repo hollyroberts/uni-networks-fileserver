@@ -14,8 +14,7 @@ public class Server {
             try {
                 clientSocket = serverSocket.accept();
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "Error accepting client connection", e);
+                System.out.println("Error accepting client connection: " + e.getMessage());
             }
 
             new Thread(new ServerConnection(clientSocket)).start();
