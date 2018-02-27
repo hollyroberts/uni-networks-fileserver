@@ -63,6 +63,9 @@ public class ServerConnection implements Runnable{
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
         log("Client is requesting to upload a file");
 
+        // Start timer
+        long startTime = System.currentTimeMillis();
+
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
@@ -110,9 +113,16 @@ public class ServerConnection implements Runnable{
         }
 
         // Write file out
+        File outFile = new File(fullPath);
+        //noinspection ResultOfMethodCallIgnored
+        outFile.getParentFile().mkdirs();
         try (FileOutputStream stream = new FileOutputStream(fullPath)) {
             stream.write(bytes);
         }
+
+        // Gather statistics
+        long endTime = System.currentTimeMillis();
+        
     }
 
     private void uploadError(ClientUploadMetaData e, DataOutputStream out) throws IOException {
