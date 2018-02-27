@@ -120,18 +120,17 @@ public class ServerConnection implements Runnable{
     private void log(String msg) {
         System.out.println("[Connection " + id + "] " + msg);
     }
-
-    class ClientUploadException extends Exception {
-        private boolean tempFile;
-
-        ClientUploadException(String message, boolean tempFile) {
-            super(message);
-            this.tempFile = tempFile;
-        }
-
-        public boolean needsCleanup() {
-            return tempFile;
-        }
-    }
 }
 
+class ClientUploadException extends Exception {
+    private boolean tempFile;
+
+    ClientUploadException(String message, boolean tempFile) {
+        super(message);
+        this.tempFile = tempFile;
+    }
+
+    public boolean needsCleanup() {
+        return tempFile;
+    }
+}
