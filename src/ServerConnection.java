@@ -1,8 +1,5 @@
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
 
@@ -35,7 +32,11 @@ public class ServerConnection implements Runnable{
 
                 switch (operation) {
                     case "UPLD":
-                        upload(input, output);
+                        try {
+                            upload(input, output);
+                        } catch (ClientUploadException e) {
+                            uploadError(e, output);
+                        }
                         break;
                     case "LIST":
                         break;
@@ -58,23 +59,16 @@ public class ServerConnection implements Runnable{
             log("Request processed: " + time + "ms");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (UploadException e) {
-            log(e.getMessage());
-            if (e.needsCleanup()) {
-                log("Deleting temporary file");
-            } else {
-                log("No data to cleanup");
-            }
         }
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, UploadException {
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadException {
         log("Client is requesting to upload a file");
 
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            throw new UploadException("Length of filename to upload is less than 0!", false);
+            throw new ClientUploadException("Length of filename to upload is less than 0!", false);
         }
 
         // Wait for filename to be in buffer then read
@@ -91,10 +85,26 @@ public class ServerConnection implements Runnable{
         waitForInput(in, 4);
         int fileSize = in.readInt();
         if (fileSize < 0) {
-            throw new UploadException("File size is less than 0 (" + fileSize + ")", true);
+            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")", true);
+        }
+        log("Filesize: " + fileSize);
+
+        log("Ready to receive data");
+        out.writeBoolean(true);
+    }
+
+    private void uploadError(ClientUploadException e, DataOutputStream out) throws IOException {
+        log(e.getMessage());
+
+        if (e.needsCleanup()) {
+            log("Deleting temporary file");
+        } else {
+            log("No data to cleanup");
         }
 
-        log("Filesize: " + fileSize);
+        log("Sending error message to client");
+        out.writeBoolean(false);
+        out.writeUTF(e.getMessage());
     }
 
     private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
@@ -111,10 +121,10 @@ public class ServerConnection implements Runnable{
         System.out.println("[Connection " + id + "] " + msg);
     }
 
-    class UploadException extends Exception {
+    class ClientUploadException extends Exception {
         private boolean tempFile;
 
-        UploadException(String message, boolean tempFile) {
+        ClientUploadException(String message, boolean tempFile) {
             super(message);
             this.tempFile = tempFile;
         }
