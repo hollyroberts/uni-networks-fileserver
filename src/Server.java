@@ -3,7 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private static int PORT_NUMBER = 1099;
+    private static int PORT_NUMBER = 1100;
 
     private void run() throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);

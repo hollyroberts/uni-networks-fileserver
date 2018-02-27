@@ -8,7 +8,6 @@ import java.util.List;
 
  */
 public class ServerConnection implements Runnable{
-
     private Socket clientSocket = null;
 
     ServerConnection(Socket clientSocket) {
@@ -37,26 +36,5 @@ public class ServerConnection implements Runnable{
     }
 
     private void process(DataInputStream in, DataOutputStream out) throws IOException {
-        List<Integer> numbers = new ArrayList<Integer>();
-
-        try {
-            while (true) {
-                int num = in.readInt();
-
-                if (num == -1) { break; }
-                numbers.add(num);
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-
-        System.out.println("Numbers received: " + numbers.toString());
-
-        if (numbers.size() != 5) {
-            out.writeUTF("Did not receive 5 numbers");
-            return;
-        }
-
-        out.writeUTF("Received 5 numbers");
     }
 }
