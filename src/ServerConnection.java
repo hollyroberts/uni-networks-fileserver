@@ -32,7 +32,7 @@ public class ServerConnection implements Runnable{
                     case "UPLD":
                         try {
                             upload(input, output);
-                        } catch (ClientUploadException e) {
+                        } catch (ClientUploadMetaData e) {
                             uploadError(e, output);
                         }
                         break;
@@ -60,13 +60,13 @@ public class ServerConnection implements Runnable{
         }
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadException {
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
         log("Client is requesting to upload a file");
 
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            throw new ClientUploadException("Length of filename to upload is less than 0", false);
+            throw new ClientUploadMetaData("Length of filename to upload is less than 0");
         }
 
         // Wait for filename to be in buffer then read
@@ -77,28 +77,46 @@ public class ServerConnection implements Runnable{
         }
 
         String fileName = new String(fileNameChar);
+        String fullPath = Server.BASE_DIR + fileName;
         log("Filename: " + fileName);
 
         // Get filesize
         Misc.waitForInput(in, 4);
         int fileSize = in.readInt();
         if (fileSize < 0) {
-            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")", false);
+            throw new ClientUploadMetaData("File size is less than 0 (" + fileSize + ")");
         }
         log("Filesize: " + fileSize);
 
+        // Receive data from client
         log("Ready to receive data");
         out.writeBoolean(true);
+
+        // Declare our array of bytes
+        byte[] bytes = new byte[fileSize];
+        int totBytesRead = 0;
+
+        // Read as many bytes as possible until buffer is full
+        while (totBytesRead < fileSize) {
+            int bytesRead = in.read(bytes, totBytesRead, fileSize - totBytesRead);
+
+            // If end of stream has been reached then wait for more data
+            if (bytesRead == -1) {
+                Misc.waitForInput(in, 1);
+                continue;
+            }
+
+            totBytesRead += bytesRead;
+        }
+
+        // Write file out
+        try (FileOutputStream stream = new FileOutputStream(fullPath)) {
+            stream.write(bytes);
+        }
     }
 
-    private void uploadError(ClientUploadException e, DataOutputStream out) throws IOException {
+    private void uploadError(ClientUploadMetaData e, DataOutputStream out) throws IOException {
         log(e.getMessage());
-
-        if (e.needsCleanup()) {
-            log("Deleting temporary file");
-        } else {
-            log("No data to cleanup");
-        }
 
         log("Sending error message to client");
         out.writeBoolean(false);
@@ -110,15 +128,8 @@ public class ServerConnection implements Runnable{
     }
 }
 
-class ClientUploadException extends Exception {
-    private boolean tempFile;
-
-    ClientUploadException(String message, boolean tempFile) {
+class ClientUploadMetaData extends Exception {
+    ClientUploadMetaData(String message) {
         super(message);
-        this.tempFile = tempFile;
-    }
-
-    public boolean needsCleanup() {
-        return tempFile;
     }
 }
