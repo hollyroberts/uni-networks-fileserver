@@ -16,11 +16,8 @@ public class ServerConnection implements Runnable{
     public void run() {
         log("Connected");
 
-        try {
-            long startTime = System.currentTimeMillis();
-
-            DataInputStream input  = new DataInputStream(clientSocket.getInputStream());
-            DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
+        try (DataInputStream input  = new DataInputStream(clientSocket.getInputStream());
+             DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream())) {
 
             wait: while (true) {
                 Misc.waitForInput(input, 1);
@@ -34,6 +31,8 @@ public class ServerConnection implements Runnable{
                             upload(input, output);
                         } catch (ClientUploadMetaData e) {
                             uploadError(e, output);
+                            log("Terminating connection due to client error");
+                            break wait;
                         }
                         break;
                     case "LIST":
@@ -43,8 +42,11 @@ public class ServerConnection implements Runnable{
                     case "DELF":
                         break;
                     case "QUIT":
-                        break;
+                        log("QUIT triggered by client");
+                        break wait;
                     default:
+                        log("Operation unknown: " + operation);
+                        log("Terminating connection due to client error");
                         break wait;
                 }
             }
@@ -52,12 +54,11 @@ public class ServerConnection implements Runnable{
             output.close();
             input.close();
             clientSocket.close();
-
-            long time = System.currentTimeMillis() - startTime;
-            log("Request processed: " + time + "ms");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+
+        log("Disconnected");
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
