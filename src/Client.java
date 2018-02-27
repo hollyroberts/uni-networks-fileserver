@@ -20,6 +20,8 @@ public class Client {
             }
 
             out.writeUTF("UPLD");
+            out.writeShort(12);
+            out.writeChars("Hello World!");
 
             socket.close();
             System.out.println("Socket closed");
