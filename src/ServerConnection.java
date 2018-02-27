@@ -122,7 +122,12 @@ public class ServerConnection implements Runnable{
 
         // Gather statistics
         long endTime = System.currentTimeMillis();
-        
+        double timeTaken = (endTime - startTime) / 1000;
+        String response = String.format("%d bytes transferred in %,.2fs", fileSize, timeTaken);
+
+        log(response);
+        out.writeUTF(response);
+        log("Upload finished");
     }
 
     private void uploadError(ClientUploadMetaData e, DataOutputStream out) throws IOException {
