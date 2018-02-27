@@ -19,6 +19,8 @@ public class ServerConnection implements Runnable{
     }
 
     public void run() {
+        log("Connected");
+
         try {
             long startTime = System.currentTimeMillis();
 
@@ -56,17 +58,23 @@ public class ServerConnection implements Runnable{
             log("Request processed: " + time + "ms");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } catch (UploadException e) {
+            log(e.getMessage());
+            if (e.needsCleanup()) {
+                log("Deleting temporary file");
+            } else {
+                log("No data to cleanup");
+            }
         }
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, UploadException {
         log("Client is requesting to upload a file");
 
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            log("Length of filename to upload is less than 0!");
-            return;
+            throw new UploadException("Length of filename to upload is less than 0!", false);
         }
 
         // Wait for filename to be in buffer then read
@@ -78,6 +86,16 @@ public class ServerConnection implements Runnable{
 
         String fileName = new String(fileNameChar);
         log("Filename: " + fileName);
+
+        // Get filesize
+        waitForInput(in, 4);
+        int fileSize = in.readInt();
+        if (fileSize < 0) {
+            log("File size is less than 0 (" + fileSize + ")");
+            throw new UploadException("Length of filename to upload is less than 0!", true);
+        }
+
+
     }
 
     private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
@@ -93,4 +111,18 @@ public class ServerConnection implements Runnable{
     private void log(String msg) {
         System.out.println("[Connection " + id + "] " + msg);
     }
+
+    class UploadException extends Exception {
+        private boolean tempFile;
+
+        UploadException(String message, boolean tempFile) {
+            super(message);
+            this.tempFile = tempFile;
+        }
+
+        public boolean needsCleanup() {
+            return tempFile;
+        }
+    }
 }
+
