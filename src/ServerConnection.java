@@ -5,8 +5,6 @@ import java.net.Socket;
 
  */
 public class ServerConnection implements Runnable{
-    private static int MILLIS_TO_WAIT = 1;
-
     private Socket clientSocket = null;
     private int id;
 
@@ -25,7 +23,7 @@ public class ServerConnection implements Runnable{
             DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
 
             wait: while (true) {
-                waitForInput(input, 1);
+                Misc.waitForInput(input, 1);
 
                 String operation = input.readUTF();
                 System.out.println(operation);
@@ -105,16 +103,6 @@ public class ServerConnection implements Runnable{
         log("Sending error message to client");
         out.writeBoolean(false);
         out.writeUTF(e.getMessage());
-    }
-
-    private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
-        while (true) {
-            if (stream.available() >= numBytes) {
-                return;
-            } else {
-                Thread.sleep(MILLIS_TO_WAIT);
-            }
-        }
     }
 
     private void log(String msg) {
