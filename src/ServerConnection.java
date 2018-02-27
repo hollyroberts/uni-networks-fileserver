@@ -23,16 +23,14 @@ public class ServerConnection implements Runnable{
             DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
 
             wait: while (true) {
-                if (input.available() < 1) {
-                    Thread.sleep(10);
-                    continue;
-                }
+                waitForInput(input, 1);
 
                 String operation = input.readUTF();
                 System.out.println(operation);
 
                 switch (operation) {
                     case "UPLD":
+                        upload(input, output);
                         break;
                     case "LIST":
                         break;
@@ -47,8 +45,6 @@ public class ServerConnection implements Runnable{
                 }
             }
 
-            process(input, output);
-
             output.close();
             input.close();
             clientSocket.close();
@@ -60,17 +56,25 @@ public class ServerConnection implements Runnable{
         }
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException {
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
+        System.out.println("Client is requesting to upload a file");
+
+        // Get length of filename
         short fileNameLen = in.readShort();
-        // TODO fileNameLen < 1
-        char[] fileName = new char[fileNameLen];
-
-        int charPos = 0;
-        while (charPos <= fileNameLen) {
-
-
-            charPos++;
+        if (fileNameLen < 1) {
+            System.out.println("Length of filename to upload is less than 0!");
+            return;
         }
+
+        // Wait for filename to be in buffer then read
+        char[] fileNameChar = new char[fileNameLen];
+        waitForInput(in, fileNameLen * 2);
+        for (int i = 0; i < fileNameLen; i++) {
+            fileNameChar[i] = in.readChar();
+        }
+
+        String fileName = new String(fileNameChar);
+        System.out.println("Filename: " + fileName);
     }
 
     private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
