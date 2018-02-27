@@ -12,10 +12,8 @@ public class Server {
         int curID = 1;
 
         while(true){
-            Socket clientSocket = null;
-
             try {
-                clientSocket = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept();
                 new Thread(new ServerConnection(clientSocket, curID)).start();
                 curID++;
             } catch (IOException e) {
