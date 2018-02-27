@@ -1,9 +1,6 @@
 import java.io.*;
 import java.net.Socket;
 
-/**
-
- */
 public class ServerConnection implements Runnable{
     private Socket clientSocket = null;
     private int id;

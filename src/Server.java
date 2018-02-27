@@ -11,6 +11,7 @@ public class Server {
 
         int curID = 1;
 
+        //noinspection InfiniteLoopStatement
         while(true){
             try {
                 Socket clientSocket = serverSocket.accept();
