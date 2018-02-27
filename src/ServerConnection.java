@@ -66,12 +66,12 @@ public class ServerConnection implements Runnable{
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            throw new ClientUploadException("Length of filename to upload is less than 0!", false);
+            throw new ClientUploadException("Length of filename to upload is less than 0", false);
         }
 
         // Wait for filename to be in buffer then read
         char[] fileNameChar = new char[fileNameLen];
-        waitForInput(in, fileNameLen * 2);
+        Misc.waitForInput(in, fileNameLen * 2);
         for (int i = 0; i < fileNameLen; i++) {
             fileNameChar[i] = in.readChar();
         }
@@ -80,10 +80,10 @@ public class ServerConnection implements Runnable{
         log("Filename: " + fileName);
 
         // Get filesize
-        waitForInput(in, 4);
+        Misc.waitForInput(in, 4);
         int fileSize = in.readInt();
         if (fileSize < 0) {
-            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")", true);
+            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")", false);
         }
         log("Filesize: " + fileSize);
 
