@@ -14,7 +14,7 @@ public class Client {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

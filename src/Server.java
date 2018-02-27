@@ -4,6 +4,7 @@ import java.net.Socket;
 
 public class Server {
     private static int PORT_NUMBER = 1100;
+    private static String baseDir = "files/";
 
     private void run() throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
@@ -18,7 +19,6 @@ public class Server {
             }
 
             new Thread(new ServerConnection(clientSocket)).start();
-
         }
     }
 

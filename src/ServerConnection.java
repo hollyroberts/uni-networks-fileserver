@@ -8,11 +8,14 @@ import java.util.List;
 
  */
 public class ServerConnection implements Runnable{
-    private Socket clientSocket = null;
     private static int MILLIS_TO_WAIT = 1;
 
-    ServerConnection(Socket clientSocket) {
+    private Socket clientSocket = null;
+    private int id;
+
+    ServerConnection(Socket clientSocket, int id) {
         this.clientSocket = clientSocket;
+        this.id = id;
     }
 
     public void run() {
@@ -50,19 +53,19 @@ public class ServerConnection implements Runnable{
             clientSocket.close();
 
             long time = System.currentTimeMillis() - startTime;
-            System.out.println("Request processed: " + time + "ms");
+            log("Request processed: " + time + "ms");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
-        System.out.println("Client is requesting to upload a file");
+        log("Client is requesting to upload a file");
 
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            System.out.println("Length of filename to upload is less than 0!");
+            log("Length of filename to upload is less than 0!");
             return;
         }
 
@@ -74,7 +77,7 @@ public class ServerConnection implements Runnable{
         }
 
         String fileName = new String(fileNameChar);
-        System.out.println("Filename: " + fileName);
+        log("Filename: " + fileName);
     }
 
     private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
@@ -85,5 +88,9 @@ public class ServerConnection implements Runnable{
                 Thread.sleep(MILLIS_TO_WAIT);
             }
         }
+    }
+
+    private void log(String msg) {
+        System.out.println("[Connection " + id + "] " + msg);
     }
 }
