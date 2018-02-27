@@ -91,11 +91,10 @@ public class ServerConnection implements Runnable{
         waitForInput(in, 4);
         int fileSize = in.readInt();
         if (fileSize < 0) {
-            log("File size is less than 0 (" + fileSize + ")");
-            throw new UploadException("Length of filename to upload is less than 0!", true);
+            throw new UploadException("File size is less than 0 (" + fileSize + ")", true);
         }
 
-
+        log("Filesize: " + fileSize);
     }
 
     private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
