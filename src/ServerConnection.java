@@ -57,10 +57,17 @@ public class ServerConnection implements Runnable{
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
-        short fileNameLen = in.readShort();
-        // TODO fileNameLen < 1
-        char[] fileNameChar = new char[fileNameLen];
+        System.out.println("Client is requesting to upload a file");
 
+        // Get length of filename
+        short fileNameLen = in.readShort();
+        if (fileNameLen < 1) {
+            System.out.println("Length of filename to upload is less than 0!");
+            return;
+        }
+
+        // Wait for filename to be in buffer then read
+        char[] fileNameChar = new char[fileNameLen];
         waitForInput(in, fileNameLen * 2);
         for (int i = 0; i < fileNameLen; i++) {
             fileNameChar[i] = in.readChar();
