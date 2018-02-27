@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class ServerConnection implements Runnable{
     private Socket clientSocket = null;
+    private static int MILLIS_TO_WAIT = 1;
 
     ServerConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -21,35 +22,31 @@ public class ServerConnection implements Runnable{
             DataInputStream input  = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
 
-            while (true) {
+            wait: while (true) {
                 if (input.available() < 1) {
                     Thread.sleep(10);
                     continue;
                 }
 
-                byte operation = input.readByte();
+                String operation = input.readUTF();
+                System.out.println(operation);
 
                 switch (operation) {
-                    case 1:
-                        // UPLD
+                    case "UPLD":
                         break;
-                    case 2:
-                        // LIST
+                    case "LIST":
                         break;
-                    case 3:
-                        // DWLD
+                    case "DWLD":
                         break;
-                    case 4:
-                        // DELF
+                    case "DELF":
                         break;
-                    case 5:
-                        // QUIT
+                    case "QUIT":
                         break;
                     default:
-                        break;
+                        break wait;
                 }
             }
-            
+
             process(input, output);
 
             output.close();
@@ -63,7 +60,26 @@ public class ServerConnection implements Runnable{
         }
     }
 
-    private void process(DataInputStream in, DataOutputStream out) throws IOException {
-        in.readB
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException {
+        short fileNameLen = in.readShort();
+        // TODO fileNameLen < 1
+        char[] fileName = new char[fileNameLen];
+
+        int charPos = 0;
+        while (charPos <= fileNameLen) {
+
+
+            charPos++;
+        }
+    }
+
+    private void waitForInput(DataInputStream stream, int numBytes) throws InterruptedException, IOException {
+        while (true) {
+            if (stream.available() >= numBytes) {
+                return;
+            } else {
+                Thread.sleep(MILLIS_TO_WAIT);
+            }
+        }
     }
 }
