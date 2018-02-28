@@ -35,15 +35,27 @@ public class ClientController {
     }
 
     private void setUIState(boolean connected) {
-        textIP.setDisable(connected);
-        textPort.setDisable(connected);
-        connect.setDisable(connected);
+        disableConnectionGUI(connected);
+        disableOperations(!connected);
+    }
 
-        quit.setDisable(!connected);
-        delf.setDisable(!connected);
-        dwld.setDisable(!connected);
-        list.setDisable(!connected);
-        upld.setDisable(!connected);
+    private void disableAllUI() {
+        disableOperations(true);
+        disableConnectionGUI(true);
+    }
+
+    private void disableConnectionGUI(boolean disable) {
+        textIP.setDisable(disable);
+        textPort.setDisable(disable);
+        connect.setDisable(disable);
+    }
+
+    private void disableOperations(boolean disable) {
+        quit.setDisable(disable);
+        delf.setDisable(disable);
+        dwld.setDisable(disable);
+        list.setDisable(disable);
+        upld.setDisable(disable);
     }
 
     @FXML
