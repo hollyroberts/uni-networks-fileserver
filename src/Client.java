@@ -2,16 +2,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
-public class Client {
+class Client {
     // Connection details
-    static Socket socket = null;
-    static DataInputStream in = null;
-    static DataOutputStream out = null;
+    Socket socket = null;
+    DataInputStream in = null;
+    DataOutputStream out = null;
 
-    private Client() {
-
+    Client(Socket socket, DataInputStream input, DataOutputStream output) {
+        this.socket = socket;
+        this.in = input;
+        this.out = output;
     }
 
 

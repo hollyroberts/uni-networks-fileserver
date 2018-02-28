@@ -1,4 +1,5 @@
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -27,6 +28,9 @@ public class ClientController {
 
     // Listview
     @FXML private ListView<String> listView;
+
+    // Connection info
+    Client conn = null;
 
     @FXML
     public void initialize() {
@@ -65,15 +69,37 @@ public class ClientController {
         String ip = textIP.getText();
         int port = Integer.parseInt(textPort.getText());
 
-        try {
-            log("Connecting to server");
-            Socket socket = new Socket(ip, port);
-            DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            log("Connected");
-        } catch (IOException e) {
-            log("Error connecting - " + e.getMessage());
-        }
+        Task<Client> task = new Task<Client>() {
+            @Override protected Client call() {
+                try {
+                    log("Connecting to server");
+                    Socket socket = new Socket(ip, port);
+                    DataInputStream in = new DataInputStream(socket.getInputStream());
+                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                    log("Connected");
+
+                    return new Client(socket, in, out);
+                } catch (IOException e) {
+                    log("Error connecting - " + e.getMessage());
+                }
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            conn = task.getValue();
+            setUIState(conn != null);
+        });
+
+        startTask(task);
+    }
+
+    private void startTask(Task task) {
+        disableAllUI();
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
     }
 
     private void log(String msg) {
