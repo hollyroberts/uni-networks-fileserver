@@ -130,12 +130,7 @@ public class ClientController {
 
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
-                try {
-                    return conn.upload(file, result.get());
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return false;
+                return conn.upload(file, result.get());
             }
         };
 
