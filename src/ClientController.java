@@ -4,11 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.function.UnaryOperator;
 
 public class ClientController {
     private static String DEFAULT_IP = "localhost";
@@ -29,14 +31,26 @@ public class ClientController {
     // Listview
     @FXML private ListView<String> listView;
 
+    // Formatter to restrict inputs to only numbers
+    // https://stackoverflow.com/q/40472668
+    private UnaryOperator<TextFormatter.Change> integerFilter = textField -> {
+        String input = textField.getText();
+        if (input.matches("[0-9]*")) {
+            return textField;
+        }
+        return null;
+    };
+
     // Connection info
-    Client conn = null;
+    private Client conn = null;
 
     @FXML
     public void initialize() {
         setUIState(false);
         textIP.setText(DEFAULT_IP);
         textPort.setText(String.valueOf(DEFAULT_PORT));
+
+        textPort.setTextFormatter(new TextFormatter<String>(integerFilter));
     }
 
     private void setUIState(boolean connected) {
@@ -93,6 +107,10 @@ public class ClientController {
         });
 
         startTask(task);
+    }
+
+    @FXML private void quit() {
+
     }
 
     private void startTask(Task task) {

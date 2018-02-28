@@ -15,8 +15,6 @@ class Client {
         this.out = output;
     }
 
-
-
     private void upload() throws IOException, InterruptedException {
         out.writeUTF("UPLD");
         out.writeShort(12);
