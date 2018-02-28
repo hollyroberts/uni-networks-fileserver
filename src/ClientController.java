@@ -102,6 +102,9 @@ public class ClientController {
     }
 
     @FXML private void quit() {
+        conn.quit();
+        conn = null;
+        setUIState(false);
     }
 
     @FXML private void upload() {
@@ -130,17 +133,16 @@ public class ClientController {
 
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
-                boolean status = conn.upload(file, result.get());
-
-                // Quit connection if upload fails due to server error
-                if (!status) {
-                    conn = null;
-                }
-                return status;
+                return conn.upload(file, result.get());
             }
         };
 
         task.setOnSucceeded(event -> {
+            if (!task.getValue()) {
+                conn.quit();
+                conn = null;
+            }
+
             setUIState(conn != null);
         });
         startTask(task);

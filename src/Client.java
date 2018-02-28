@@ -17,6 +17,18 @@ class Client {
         this.out = output;
     }
 
+    public void quit() {
+        try {
+            out.writeUTF("QUIT");
+            out.close();
+            in.close();
+            socket.close();
+        } catch (IOException e) {
+            Log.log("Error quitting gracefully (" + e.getMessage() + ")");
+        }
+        Log.log("Session closed");
+    }
+
     // Returns false if there is a SERVER error
     // Client errors (eg. IOException on file read, will still return true)
     public boolean upload(File file, String filename)  {
@@ -39,6 +51,7 @@ class Client {
         return true;
     }
 
+    // The code that performs the upload (wrapped in upload to handle errors)
     private void uploadLogic(String filename, byte[] bytes) throws IOException, InterruptedException {
         Log.log("Sending UPLD operation to server");
         out.writeUTF("UPLD");
