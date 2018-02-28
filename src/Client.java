@@ -136,6 +136,7 @@ class Client {
     // Returns false if there is a SERVER error
     // Client errors (eg. IOException on file read, will still return true)
     public boolean upload(File file, String filename)  {
+        // Read the file as bytes from disk first
         Log.log("Reading file from disk");
         byte[] bytes;
         try {
@@ -145,9 +146,10 @@ class Client {
             return true;
         }
 
+        // Send the file to the server
         try {
-            uploadLogic(filename, bytes);
-        } catch (IOException | InterruptedException e) {
+            uploadFile(filename, bytes);
+        } catch (IOException e) {
             Log.log(e.getMessage());
             return false;
         }
@@ -156,7 +158,7 @@ class Client {
     }
 
     // The code that performs the upload (wrapped in upload to handle errors)
-    private void uploadLogic(String filename, byte[] bytes) throws IOException, InterruptedException {
+    private void uploadFile(String filename, byte[] bytes) throws IOException {
         Log.log("Sending UPLD operation to server and waiting for response");
         out.writeUTF("UPLD");
         out.writeShort(filename.length());
@@ -167,6 +169,7 @@ class Client {
             String reason = in.readUTF();
             Log.log("Server rejected request");
             Log.log("Reason: " + reason);
+            return;
         }
 
         Log.log("Sending data to server");

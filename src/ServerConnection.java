@@ -43,8 +43,8 @@ public class ServerConnection implements Runnable{
             input.close();
             socket.close();
         } catch (IOException e) {
-            log("Exception handling client: " + e.getMessage());
-            log("Closing connections forcefully");
+            log("Input/Output error occurred: " + e.getMessage());
+            log("Closing client connection forcefully");
 
             try { output.close(); } catch (IOException f) { /* Do nothing */ }
             try { input.close(); } catch (IOException f) { /* Do nothing */ }
@@ -110,7 +110,14 @@ public class ServerConnection implements Runnable{
             return;
         }
 
+        // Read file from disk while we wait for client to respond
         Log.log("Reading file from disk");
+        byte[] bytes = Files.readAllBytes(file.toPath());
+
+        // Wait for client to return ready
+        if (!input.readBoolean()) {
+            Log.log("Client return false for ready status");
+        }
     }
 
     private void list() throws IOException {
