@@ -3,7 +3,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private static int PORT_NUMBER = 1100;
+    private static int PORT_NUMBER = 1234;
+    private static int TIMEOUT = 5000;
     public static String BASE_DIR = "files/";
 
     private void run() throws Exception {
@@ -15,6 +16,7 @@ public class Server {
         while(true){
             try {
                 Socket clientSocket = serverSocket.accept();
+                clientSocket.setSoTimeout(5000);
                 new Thread(new ServerConnection(clientSocket, curID)).start();
                 curID++;
             } catch (IOException e) {

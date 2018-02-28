@@ -1,25 +1,24 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServerConnection implements Runnable{
-    private Socket clientSocket = null;
+    private Socket socket = null;
     private int id;
 
     ServerConnection(Socket clientSocket, int id) {
-        this.clientSocket = clientSocket;
+        this.socket = clientSocket;
         this.id = id;
     }
 
     public void run() {
         log("Client connected");
 
-        try (DataInputStream input  = new DataInputStream(clientSocket.getInputStream());
-             DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream())) {
+        try (DataInputStream input  = new DataInputStream(socket.getInputStream());
+             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
 
             wait: while (true) {
                 Misc.waitForInput(input, 1);
@@ -55,7 +54,7 @@ public class ServerConnection implements Runnable{
 
             output.close();
             input.close();
-            clientSocket.close();
+            socket.close();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
