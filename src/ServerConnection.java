@@ -20,7 +20,6 @@ public class ServerConnection implements Runnable{
                 Misc.waitForInput(input, 1);
 
                 String operation = input.readUTF();
-                System.out.println(operation);
 
                 switch (operation) {
                     case "UPLD":

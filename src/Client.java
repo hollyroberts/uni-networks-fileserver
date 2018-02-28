@@ -17,7 +17,7 @@ class Client {
         this.out = output;
     }
 
-    private void upload(File file, String filename) throws IOException, InterruptedException {
+    public void upload(File file, String filename) throws IOException, InterruptedException {
         Log.log("Reading file from disk");
         byte[] bytes = Files.readAllBytes(file.toPath());
 
