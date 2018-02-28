@@ -5,11 +5,11 @@ import java.net.Socket;
 
 class Client {
     // Connection details
-    Socket socket = null;
-    DataInputStream in = null;
-    DataOutputStream out = null;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
-    Client(Socket socket, DataInputStream input, DataOutputStream output) {
+    private Client(Socket socket, DataInputStream input, DataOutputStream output) {
         this.socket = socket;
         this.in = input;
         this.out = output;
@@ -29,5 +29,21 @@ class Client {
             System.out.println("Server rejected request");
             System.out.println("Reason: " + reason);
         }
+    }
+
+    public static Client connect(String ip, int port) {
+        try {
+            Log.log("Connecting to server");
+            Socket socket = new Socket(ip, port);
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            Log.log("Connected");
+
+            return new Client(socket, in, out);
+        } catch (IOException e) {
+            Log.log("Error connecting - " + e.getMessage());
+        }
+
+        return null;
     }
 }

@@ -86,19 +86,7 @@ public class ClientController {
 
         Task<Client> task = new Task<Client>() {
             @Override protected Client call() {
-                try {
-                    Log.log("Connecting to server");
-                    Socket socket = new Socket(ip, port);
-                    DataInputStream in = new DataInputStream(socket.getInputStream());
-                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                    Log.log("Connected");
-
-                    return new Client(socket, in, out);
-                } catch (IOException e) {
-                    Log.log("Error connecting - " + e.getMessage());
-                }
-
-                return null;
+                return Client.connect(ip, port);
             }
         };
 
