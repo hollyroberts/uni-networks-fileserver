@@ -15,6 +15,8 @@ class Client {
     }
 
     public boolean download(String filename) {
+        long startTime = System.currentTimeMillis();
+
         // Download bytes from server
         byte[] bytes;
         try {
@@ -36,6 +38,11 @@ class Client {
         outFile.getParentFile().mkdirs();
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(bytes);
+
+            // Gather statistics
+            long endTime = System.currentTimeMillis();
+            double timeTaken = (endTime - startTime) / 1000;
+            Log.log(String.format("%,d bytes transferred in %,.2fs", bytes.length, timeTaken));
         } catch (IOException e) {
             Log.log("Error writing file to disk");
             Log.log(e.getMessage());
