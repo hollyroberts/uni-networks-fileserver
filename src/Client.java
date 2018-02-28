@@ -71,7 +71,7 @@ class Client {
 
             return new Client(socket, in, out);
         } catch (IOException e) {
-            Log.log("Error connecting - " + e.getMessage());
+            Log.log(e.getMessage());
         }
 
         return null;

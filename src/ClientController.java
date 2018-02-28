@@ -130,7 +130,13 @@ public class ClientController {
 
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
-                return conn.upload(file, result.get());
+                boolean status = conn.upload(file, result.get());
+
+                // Quit connection if upload fails due to server error
+                if (!status) {
+                    conn = null;
+                }
+                return status;
             }
         };
 
