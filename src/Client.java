@@ -37,6 +37,7 @@ class Client {
         }
 
         Log.log("Sending data to server");
+        out.write(bytes);
 
         return true;
     }

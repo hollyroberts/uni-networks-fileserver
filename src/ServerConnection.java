@@ -115,6 +115,10 @@ public class ServerConnection implements Runnable{
         outFile.getParentFile().mkdirs();
         try (FileOutputStream stream = new FileOutputStream(fullPath)) {
             stream.write(bytes);
+        } catch (IOException e) {
+            log("Error writing file to disk");
+            log(e.getMessage());
+            out.writeUTF("Server error, could not write to disk (" + e.getMessage() + ")");
         }
 
         // Gather statistics
