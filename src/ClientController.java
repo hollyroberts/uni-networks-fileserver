@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -76,7 +77,7 @@ public class ClientController {
     }
 
     private void log(String msg) {
-        listView.getItems().add(msg);
         System.out.println(msg);
+        Platform.runLater(() -> listView.getItems().add(msg));
     }
 }
