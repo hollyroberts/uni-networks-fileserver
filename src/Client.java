@@ -17,7 +17,26 @@ class Client {
         this.out = output;
     }
 
-    public void list() throws IOException, InterruptedException {
+    public boolean list() {
+        String[] listings;
+
+        try {
+            listings = retrieveListings();
+        } catch (IOException | InterruptedException e) {
+            Log.log(e.getMessage());
+            return false;
+        }
+
+        // Once listings are retrieved, display to client
+        Log.log("Listings:");
+        for (String listing : listings) {
+            Log.log(listing);
+        }
+
+        return true;
+    }
+
+    private String[] retrieveListings() throws IOException, InterruptedException {
         Log.log("Retrieving listings");
         out.writeUTF("LIST");
 
@@ -26,7 +45,7 @@ class Client {
         int numListings = in.readInt();
         if (numListings <= 0) {
             Log.log("Server contains no listings");
-            return;
+            return new String[0];
         }
 
         // Retrieve listings
@@ -36,11 +55,7 @@ class Client {
             listings[i] = in.readUTF();
         }
 
-        // Once listings are retrieved, display to client
-        Log.log("Listings:");
-        for (String listing : listings) {
-            Log.log(listing);
-        }
+        return listings;
     }
 
     // Attempts to quit gracefully using operations
