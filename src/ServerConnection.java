@@ -33,7 +33,7 @@ public class ServerConnection implements Runnable{
                     case "UPLD":
                         try {
                             upload(input, output);
-                        } catch (ClientUploadMetaData e) {
+                        } catch (ClientUploadException e) {
                             uploadError(e, output);
                             log("Terminating connection due to client error");
                             break wait;
@@ -87,7 +87,7 @@ public class ServerConnection implements Runnable{
         log("Sent listings to client");
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
+    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadException {
         log("Client is requesting to upload a file");
 
         // Start timer
@@ -96,7 +96,7 @@ public class ServerConnection implements Runnable{
         // Get length of filename
         short fileNameLen = in.readShort();
         if (fileNameLen < 1) {
-            throw new ClientUploadMetaData("Length of filename to upload is less than 0");
+            throw new ClientUploadException("Length of filename to upload is less than 0");
         }
 
         // Wait for filename to be in buffer then read
@@ -112,7 +112,7 @@ public class ServerConnection implements Runnable{
         // Get filesize
         int fileSize = in.readInt();
         if (fileSize < 0) {
-            throw new ClientUploadMetaData("File size is less than 0 (" + fileSize + ")");
+            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")");
         }
         log("Filesize: " + fileSize);
 
@@ -152,7 +152,7 @@ public class ServerConnection implements Runnable{
         log("Upload finished");
     }
 
-    private void uploadError(ClientUploadMetaData e, DataOutputStream out) throws IOException {
+    private void uploadError(ClientUploadException e, DataOutputStream out) throws IOException {
         log(e.getMessage());
 
         log("Sending error message to client");
@@ -165,8 +165,8 @@ public class ServerConnection implements Runnable{
     }
 }
 
-class ClientUploadMetaData extends Exception {
-    ClientUploadMetaData(String message) {
+class ClientUploadException extends Exception {
+    ClientUploadException(String message) {
         super(message);
     }
 }
