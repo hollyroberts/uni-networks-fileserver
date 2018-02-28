@@ -3,7 +3,9 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -114,8 +116,11 @@ public class ClientController {
 
         // Get filename
         TextInputDialog dialog = new TextInputDialog(file.getName());
-        dialog.setTitle("Enter filename");
+        dialog.initStyle(StageStyle.UTILITY);
+        dialog.setHeaderText("Enter filename");
         dialog.setContentText("Filename to save on server:");
+        dialog.initOwner(getStage());
+        dialog.initModality(Modality.WINDOW_MODAL);
 
         // Traditional way to get the response value.
         Optional<String> result = dialog.showAndWait();
