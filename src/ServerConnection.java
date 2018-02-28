@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerConnection implements Runnable{
-    private Socket socket = null;
     private int id;
+
+    private Socket socket;
+    private DataInputStream input;
+    private DataOutputStream output;
 
     ServerConnection(Socket clientSocket, int id) {
         this.socket = clientSocket;
@@ -18,8 +21,9 @@ public class ServerConnection implements Runnable{
     public void run() {
         log("Client connected");
 
-        try (DataInputStream input  = new DataInputStream(socket.getInputStream());
-             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+        try {
+            input = new DataInputStream(socket.getInputStream());
+            output = new DataOutputStream(socket.getOutputStream());
 
             wait: while (true) {
                 String operation;
@@ -32,17 +36,18 @@ public class ServerConnection implements Runnable{
                 switch (operation) {
                     case "UPLD":
                         try {
-                            upload(input, output);
+                            upload();
                         } catch (ClientUploadException e) {
-                            uploadError(e, output);
+                            uploadError(e);
                             log("Terminating connection due to client error");
                             break wait;
                         }
                         break;
                     case "LIST":
-                        list(output);
+                        list();
                         break;
                     case "DWLD":
+                        download();
                         break;
                     case "DELF":
                         break;
@@ -66,7 +71,7 @@ public class ServerConnection implements Runnable{
         log("Client disconnected");
     }
 
-    private void list(DataOutputStream out) throws IOException {
+    private void list() throws IOException {
         log("Sending listings to client");
         List<String> listings = new ArrayList<>();
 
@@ -79,7 +84,7 @@ public class ServerConnection implements Runnable{
                 });
 
         // Send listings to client
-        out.writeInt(listings.size());
+        output.writeInt(listings.size());
         for (String listing : listings) {
             //out.writeUTF(listing);
         }
@@ -87,14 +92,14 @@ public class ServerConnection implements Runnable{
         log("Sent listings to client");
     }
 
-    private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadException {
+    private void upload() throws IOException, InterruptedException, ClientUploadException {
         log("Client is requesting to upload a file");
 
         // Start timer
         long startTime = System.currentTimeMillis();
 
         // Get length of filename
-        short fileNameLen = in.readShort();
+        short fileNameLen = input.readShort();
         if (fileNameLen < 1) {
             throw new ClientUploadException("Length of filename to upload is less than 0");
         }
@@ -102,7 +107,7 @@ public class ServerConnection implements Runnable{
         // Wait for filename to be in buffer then read
         char[] fileNameChar = new char[fileNameLen];
         for (int i = 0; i < fileNameLen; i++) {
-            fileNameChar[i] = in.readChar();
+            fileNameChar[i] = input.readChar();
         }
 
         String fileName = new String(fileNameChar);
@@ -110,7 +115,7 @@ public class ServerConnection implements Runnable{
         log("Filename: " + fileName);
 
         // Get filesize
-        int fileSize = in.readInt();
+        int fileSize = input.readInt();
         if (fileSize < 0) {
             throw new ClientUploadException("File size is less than 0 (" + fileSize + ")");
         }
@@ -118,7 +123,7 @@ public class ServerConnection implements Runnable{
 
         // Receive data from client
         log("Ready to receive data");
-        out.writeBoolean(true);
+        output.writeBoolean(true);
 
         // Declare our array of bytes
         byte[] bytes = new byte[fileSize];
@@ -126,7 +131,7 @@ public class ServerConnection implements Runnable{
 
         // Read as many bytes as possible until buffer is full
         while (totBytesRead < fileSize) {
-            int bytesRead = in.read(bytes, totBytesRead, fileSize - totBytesRead);
+            int bytesRead = input.read(bytes, totBytesRead, fileSize - totBytesRead);
             totBytesRead += bytesRead;
         }
 
@@ -139,7 +144,7 @@ public class ServerConnection implements Runnable{
         } catch (IOException e) {
             log("Error writing file to disk");
             log(e.getMessage());
-            out.writeUTF("Server error, could not write to disk (" + e.getMessage() + ")");
+            output.writeUTF("Server error, could not write to disk (" + e.getMessage() + ")");
         }
 
         // Gather statistics
@@ -148,16 +153,16 @@ public class ServerConnection implements Runnable{
         String response = String.format("%,d bytes transferred in %,.2fs", fileSize, timeTaken);
 
         log(response);
-        out.writeUTF(response);
+        output.writeUTF(response);
         log("Upload finished");
     }
 
-    private void uploadError(ClientUploadException e, DataOutputStream out) throws IOException {
+    private void uploadError(ClientUploadException e) throws IOException {
         log(e.getMessage());
 
         log("Sending error message to client");
-        out.writeBoolean(false);
-        out.writeUTF(e.getMessage());
+        output.writeBoolean(false);
+        output.writeUTF(e.getMessage());
     }
 
     private void log(String msg) {
