@@ -116,8 +116,13 @@ public class ServerConnection implements Runnable{
 
         // Wait for client to return ready
         if (!input.readBoolean()) {
-            Log.log("Client return false for ready status");
+            Log.log("Client returned false for ready status");
+            return;
         }
+
+        // Send bytes to client
+        output.write(bytes);
+        Log.log("Bytes sent");
     }
 
     private void list() throws IOException {
