@@ -19,6 +19,7 @@ public class ClientController {
     // Connection UI
     @FXML private TextField textIP;
     @FXML private TextField textPort;
+    @FXML private TextField textTimeout;
     @FXML private Button connect;
     @FXML private Button quit;
 
@@ -47,9 +48,12 @@ public class ClientController {
     @FXML
     public void initialize() {
         setUIState(false);
+
         textIP.setText(DEFAULT_IP);
         textPort.setText(String.valueOf(DEFAULT_PORT));
         textPort.setTextFormatter(new TextFormatter<String>(integerFilter));
+        textTimeout.setText(String.valueOf(DEFAULT_TIMEOUT));
+        textTimeout.setTextFormatter(new TextFormatter<String>(integerFilter));
 
         Log.init(listView);
     }
@@ -83,10 +87,11 @@ public class ClientController {
         // Get IP/Port
         String ip = textIP.getText();
         int port = Integer.parseInt(textPort.getText());
+        int timeout = Integer.parseInt(textTimeout.getText());
 
         Task<Client> task = new Task<Client>() {
             @Override protected Client call() {
-                return Client.connect(ip, port);
+                return Client.connect(ip, port, timeout);
             }
         };
 

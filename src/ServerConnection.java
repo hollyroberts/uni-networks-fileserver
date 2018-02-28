@@ -77,7 +77,7 @@ public class ServerConnection implements Runnable{
         // Send listings to client
         out.writeInt(listings.size());
         for (String listing : listings) {
-            out.writeUTF(listing);
+            //out.writeUTF(listing);
         }
 
         log("Sent listings to client");
@@ -97,7 +97,6 @@ public class ServerConnection implements Runnable{
 
         // Wait for filename to be in buffer then read
         char[] fileNameChar = new char[fileNameLen];
-        Misc.waitForInput(in, fileNameLen * 2);
         for (int i = 0; i < fileNameLen; i++) {
             fileNameChar[i] = in.readChar();
         }
@@ -107,7 +106,6 @@ public class ServerConnection implements Runnable{
         log("Filename: " + fileName);
 
         // Get filesize
-        Misc.waitForInput(in, 4);
         int fileSize = in.readInt();
         if (fileSize < 0) {
             throw new ClientUploadMetaData("File size is less than 0 (" + fileSize + ")");
@@ -125,13 +123,6 @@ public class ServerConnection implements Runnable{
         // Read as many bytes as possible until buffer is full
         while (totBytesRead < fileSize) {
             int bytesRead = in.read(bytes, totBytesRead, fileSize - totBytesRead);
-
-            // If end of stream has been reached then wait for more data
-            if (bytesRead == -1) {
-                Misc.waitForInput(in, 1);
-                continue;
-            }
-
             totBytesRead += bytesRead;
         }
 

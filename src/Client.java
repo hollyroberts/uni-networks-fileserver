@@ -41,7 +41,6 @@ class Client {
         out.writeUTF("LIST");
 
         // Number of listings to retrieve
-        Misc.waitForInput(in, 1);
         int numListings = in.readInt();
         if (numListings <= 0) {
             Log.log("Server contains no listings");
@@ -51,7 +50,6 @@ class Client {
         // Retrieve listings
         String[] listings = new String[numListings];
         for (int i = 0; i < numListings; i++) {
-            Misc.waitForInput(in, 1);
             listings[i] = in.readUTF();
         }
 
@@ -101,9 +99,7 @@ class Client {
         out.writeChars(filename);
         out.writeInt(bytes.length);
 
-        Misc.waitForInput(in, 1);
         if (!in.readBoolean()) {
-            Misc.waitForInput(in, 1);
             String reason = in.readUTF();
             Log.log("Server rejected request");
             Log.log("Reason: " + reason);
@@ -111,15 +107,14 @@ class Client {
 
         Log.log("Sending data to server");
         out.write(bytes);
-
-        Misc.waitForInput(in, 1);
         Log.log(in.readUTF());
     }
 
-    public static Client connect(String ip, int port) {
+    public static Client connect(String ip, int port, int timeout) {
         try {
             Log.log("Connecting to server");
             Socket socket = new Socket(ip, port);
+            socket.setSoTimeout(timeout);
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             Log.log("Connected");
