@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerConnection implements Runnable{
     private Socket clientSocket = null;
@@ -34,7 +37,7 @@ public class ServerConnection implements Runnable{
                         }
                         break;
                     case "LIST":
-                        list(input, output);
+                        list(output);
                         break;
                     case "DWLD":
                         break;
@@ -60,11 +63,25 @@ public class ServerConnection implements Runnable{
         log("Client disconnected");
     }
 
-    private void list(DataInputStream in, DataOutputStream out) throws IOException {
+    private void list(DataOutputStream out) throws IOException {
+        Log.log("Sending listings to client");
+        List<String> listings = new ArrayList<>();
+
         // Get listings by traversing through source directory
         Files.walk(Paths.get(Server.BASE_DIR))
                 .filter(Files::isRegularFile)
-                .forEach(System.out::println);
+                .forEach(path -> {
+                    String listing = path.toString().substring(Server.BASE_DIR.length());
+                    listings.add(listing);
+                });
+
+        // Send listings to client
+        out.writeInt(listings.size());
+        for (String listing : listings) {
+            out.writeUTF(listing);
+        }
+
+        Log.log("Sent listings to client");
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
