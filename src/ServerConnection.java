@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,9 +22,12 @@ public class ServerConnection implements Runnable{
              DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
 
             wait: while (true) {
-                Misc.waitForInput(input, 1);
-
-                String operation = input.readUTF();
+                String operation;
+                try {
+                    operation = input.readUTF();
+                } catch (SocketTimeoutException e) {
+                    continue;
+                }
 
                 switch (operation) {
                     case "UPLD":
@@ -56,7 +60,7 @@ public class ServerConnection implements Runnable{
             input.close();
             socket.close();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            log(e.getMessage());
         }
 
         log("Client disconnected");
