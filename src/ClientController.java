@@ -169,6 +169,9 @@ class Log {
 
     public static void log(String msg) {
         System.out.println(msg);
-        Platform.runLater(() -> list.getItems().add(msg));
+        Platform.runLater(() -> {
+            list.getItems().add(msg);
+            list.scrollTo(list.getItems().size() - 1);
+        });
     }
 }

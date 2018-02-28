@@ -48,7 +48,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <ListView fx:id="listView" focusTraversable="false" maxHeight="1.7976931348623157E308" mouseTransparent="true" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="listView" focusTraversable="false" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                </children>
                <HBox.margin>
                   <Insets top="10.0" />
