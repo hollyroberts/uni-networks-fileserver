@@ -134,7 +134,7 @@ public class ServerConnection implements Runnable{
         File outFile = new File(fullPath);
         //noinspection ResultOfMethodCallIgnored
         outFile.getParentFile().mkdirs();
-        try (FileOutputStream stream = new FileOutputStream(fullPath)) {
+        try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(bytes);
         } catch (IOException e) {
             log("Error writing file to disk");

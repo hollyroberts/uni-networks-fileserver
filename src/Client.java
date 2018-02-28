@@ -1,7 +1,4 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
@@ -15,6 +12,66 @@ class Client {
         this.socket = socket;
         this.in = input;
         this.out = output;
+    }
+
+    public boolean download(String filename) {
+        // Download bytes from server
+        byte[] bytes;
+        try {
+            bytes = downloadFromServer(filename);
+        } catch (IOException e) {
+            Log.log(e.getMessage());
+            return false;
+        }
+
+        // If bytes is null then some error has occurred, but it's not fatal
+        if (bytes == null) {
+            return true;
+        }
+
+        // Save to disk
+        // Write file out
+        File outFile = new File(filename);
+        //noinspection ResultOfMethodCallIgnored
+        outFile.getParentFile().mkdirs();
+        try (FileOutputStream stream = new FileOutputStream(outFile)) {
+            stream.write(bytes);
+        } catch (IOException e) {
+            Log.log("Error writing file to disk");
+            Log.log(e.getMessage());
+        }
+
+        return true;
+    }
+
+    private byte[] downloadFromServer(String filename) throws IOException {
+        Log.log("Sending DWLD operation to server");
+        out.writeUTF("DWLD");
+        out.writeShort(filename.length());
+        out.writeChars(filename);
+
+        int fileSize = in.readInt();
+        if (fileSize == -1) {
+            Log.log("File does not exist on server");
+            return null;
+        } else if (fileSize < 0) {
+            Log.log("Negative integer returned for filesize that was not -1. Download cancelled");
+            return null;
+        }
+
+        Log.log("Downloading from server");
+
+        // Declare our array of bytes
+        byte[] bytes = new byte[fileSize];
+        int totBytesRead = 0;
+
+        // Read as many bytes as possible until buffer is full
+        while (totBytesRead < fileSize) {
+            int bytesRead = in.read(bytes, totBytesRead, fileSize - totBytesRead);
+            totBytesRead += bytesRead;
+        }
+
+        return bytes;
     }
 
     public boolean list() {
