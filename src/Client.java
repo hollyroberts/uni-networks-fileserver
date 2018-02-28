@@ -12,9 +12,9 @@ public class Client {
     private static Scanner reader = new Scanner(System.in);
 
     // Connection details
-    Socket socket = null;
-    DataInputStream in = null;
-    DataOutputStream out = null;
+    static Socket socket = null;
+    static DataInputStream in = null;
+    static DataOutputStream out = null;
 
     public static void main(String[] args) throws InterruptedException {
         boolean connected = false;
@@ -24,23 +24,44 @@ public class Client {
             System.out.print(" > ");
             String input = reader.nextLine();
 
-            switch(input) {
-                case "UPLD":
-                    break;
-                case "DELF":
-                    break;
-                case "DWLD":
-                    break;
-                case "QUIT":
-                    break;
+            if (connected) {
+                switch(input.toUpperCase()) {
+                    case "UPLD":
+                        break;
+                    case "DELF":
+                        break;
+                    case "DWLD":
+                        break;
+                    case "QUIT":
+                        break;
+                    default:
+                        System.out.println("Command not recognised. Available commands: DELF, DWLD, LIST, UPLD, QUIT");
+                        break;
+                }
+            } else {
+                if (!input.toUpperCase().equals("CONN")) {
+                    System.out.println("Command not recognised. Available commands: CONN");
+                } else {
+                    connected = connect();
+                }
             }
         }
     }
 
-    private void connect() throws IOException {
-        Socket socket = new Socket("localhost", PORT_NUMBER);
-        DataInputStream in = new DataInputStream(socket.getInputStream());
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+    private static boolean connect() {
+        try {
+            System.out.println("Connecting to server");
+            socket = new Socket("localhost", PORT_NUMBER);
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Connected");
+
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error connecting - " + e.getMessage());
+
+            return false;
+        }
     }
 
     private void upload() throws IOException, InterruptedException {
