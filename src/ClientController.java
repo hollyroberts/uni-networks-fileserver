@@ -24,6 +24,18 @@ public class ClientController {
 
     @FXML
     public void initialize() {
+        setUIState(false);
+    }
 
+    private void setUIState(boolean connected) {
+        textIP.setDisable(connected);
+        textPort.setDisable(connected);
+        connect.setDisable(connected);
+
+        quit.setDisable(!connected);
+        delf.setDisable(!connected);
+        dwld.setDisable(!connected);
+        list.setDisable(!connected);
+        upld.setDisable(!connected);
     }
 }
