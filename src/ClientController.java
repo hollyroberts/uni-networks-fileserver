@@ -3,6 +3,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
 public class ClientController {
     private static String DEFAULT_IP = "localhost";
     private static int DEFAULT_PORT = 1100;
@@ -25,6 +30,8 @@ public class ClientController {
     @FXML
     public void initialize() {
         setUIState(false);
+        textIP.setText(DEFAULT_IP);
+        textPort.setText(String.valueOf(DEFAULT_PORT));
     }
 
     private void setUIState(boolean connected) {
@@ -37,5 +44,26 @@ public class ClientController {
         dwld.setDisable(!connected);
         list.setDisable(!connected);
         upld.setDisable(!connected);
+    }
+
+    private void connect() {
+        // Get IP/Port
+        String ip = textIP.getText();
+        int port = Integer.parseInt(textPort.getText());
+
+        try {
+            log("Connecting to server");
+            Socket socket = new Socket(ip, port);
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            log("Connected");
+        } catch (IOException e) {
+            log("Error connecting - " + e.getMessage());
+        }
+    }
+
+    private void log(String msg) {
+        listView.getItems().add(msg);
+        System.out.println(msg);
     }
 }
