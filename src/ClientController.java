@@ -49,8 +49,9 @@ public class ClientController {
         setUIState(false);
         textIP.setText(DEFAULT_IP);
         textPort.setText(String.valueOf(DEFAULT_PORT));
-
         textPort.setTextFormatter(new TextFormatter<String>(integerFilter));
+
+        Log.init(listView);
     }
 
     private void setUIState(boolean connected) {
@@ -86,15 +87,15 @@ public class ClientController {
         Task<Client> task = new Task<Client>() {
             @Override protected Client call() {
                 try {
-                    log("Connecting to server");
+                    Log.log("Connecting to server");
                     Socket socket = new Socket(ip, port);
                     DataInputStream in = new DataInputStream(socket.getInputStream());
                     DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                    log("Connected");
+                    Log.log("Connected");
 
                     return new Client(socket, in, out);
                 } catch (IOException e) {
-                    log("Error connecting - " + e.getMessage());
+                    Log.log("Error connecting - " + e.getMessage());
                 }
 
                 return null;
@@ -110,7 +111,19 @@ public class ClientController {
     }
 
     @FXML private void quit() {
+    }
 
+    @FXML private void upload() {
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override protected Boolean call() {
+                return true;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            setUIState(conn != null);
+        });
+        startTask(task);
     }
 
     private void startTask(Task task) {
@@ -119,9 +132,17 @@ public class ClientController {
         th.setDaemon(true);
         th.start();
     }
+}
 
-    private void log(String msg) {
+class Log {
+    private static ListView<String> list;
+
+    public static void init(ListView list) {
+        Log.list = list;
+    }
+
+    public static void log(String msg) {
         System.out.println(msg);
-        Platform.runLater(() -> listView.getItems().add(msg));
+        Platform.runLater(() -> list.getItems().add(msg));
     }
 }
