@@ -88,7 +88,29 @@ public class ServerConnection implements Runnable{
     }
 
     private void download() throws IOException, ClientError {
+        Log.log("Client is requesting to download a file");
 
+        short filenameLength = input.readShort();
+        if (filenameLength <= 0) {
+            throw new ClientError("Length of filename was not a positive integer (received " + filenameLength + ")");
+        }
+
+        char[] chars = new char[filenameLength];
+        for (int i = 0; i < filenameLength; i++) {
+            chars[i] = input.readChar();
+        }
+        String filename = new String(chars);
+        String fullPath = Server.BASE_DIR + filename;
+
+        // Check if file exists
+        File file = new File(fullPath);
+        if (!file.exists()) {
+            Log.log("The file \"" + filename + "\" does not exist on the server");
+            output.writeInt(-1);
+            return;
+        }
+
+        Log.log("Reading file from disk");
     }
 
     private void list() throws IOException {
