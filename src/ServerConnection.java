@@ -25,50 +25,71 @@ public class ServerConnection implements Runnable{
             input = new DataInputStream(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
 
-            wait: while (true) {
-                String operation;
-                try {
-                    operation = input.readUTF();
-                } catch (SocketTimeoutException e) {
-                    continue;
+            try {
+                mainLoop();
+            } catch (ClientError e) {
+                log(e.getMessage());
+
+                if (e.sendErrorBack) {
+                    Log.log("Sending error message back to client");
+                    output.writeBoolean(false);
+                    output.writeUTF(e.getMessage());
                 }
 
-                switch (operation) {
-                    case "UPLD":
-                        try {
-                            upload();
-                        } catch (ClientUploadException e) {
-                            uploadError(e);
-                            log("Terminating connection due to client error");
-                            break wait;
-                        }
-                        break;
-                    case "LIST":
-                        list();
-                        break;
-                    case "DWLD":
-                        download();
-                        break;
-                    case "DELF":
-                        break;
-                    case "QUIT":
-                        log("QUIT triggered by client");
-                        break wait;
-                    default:
-                        log("Operation unknown: " + operation);
-                        log("Terminating connection due to client error");
-                        break wait;
-                }
+                Log.log("Attempting to end connection gracefully");
             }
 
             output.close();
             input.close();
             socket.close();
-        } catch (IOException | InterruptedException e) {
-            log(e.getMessage());
+        } catch (IOException e) {
+            log("Exception handling client: " + e.getMessage());
+            log("Closing connections forcefully");
+
+            try { output.close(); } catch (IOException f) { /* Do nothing */ }
+            try { input.close(); } catch (IOException f) { /* Do nothing */ }
+            try { socket.close(); } catch (IOException f) { /* Do nothing */ }
         }
 
         log("Client disconnected");
+    }
+
+    private void mainLoop() throws IOException, ClientError {
+        wait: while (true) {
+            String operation;
+            try {
+                operation = input.readUTF();
+            } catch (SocketTimeoutException e) {
+                // Socket will continually timeout as no input is received unless prompted by the client
+                continue;
+            }
+
+            switch (operation) {
+                case "UPLD":
+                    try {
+                        upload();
+                    } catch (ClientError e) {
+                        uploadError(e);
+                        break wait;
+                    }
+                    break;
+                case "LIST":
+                    list();
+                    break;
+                case "DWLD":
+                    download();
+                    break;
+                case "DELF":
+                    break;
+                case "QUIT":
+                    log("QUIT triggered by client");
+                    break wait;
+                default:
+                    log("Operation unknown: " + operation);
+                    log("Terminating connection due to client error");
+                    break wait;
+            }
+        }
     }
 
     private void list() throws IOException {
@@ -92,7 +113,7 @@ public class ServerConnection implements Runnable{
         log("Sent listings to client");
     }
 
-    private void upload() throws IOException, InterruptedException, ClientUploadException {
+    private void upload() throws IOException, ClientError {
         log("Client is requesting to upload a file");
 
         // Start timer
@@ -101,7 +122,7 @@ public class ServerConnection implements Runnable{
         // Get length of filename
         short fileNameLen = input.readShort();
         if (fileNameLen < 1) {
-            throw new ClientUploadException("Length of filename to upload is less than 0");
+            throw new ClientError("Length of filename to upload is less than 0", true);
         }
 
         // Wait for filename to be in buffer then read
@@ -117,7 +138,7 @@ public class ServerConnection implements Runnable{
         // Get filesize
         int fileSize = input.readInt();
         if (fileSize < 0) {
-            throw new ClientUploadException("File size is less than 0 (" + fileSize + ")");
+            throw new ClientError("File size is less than 0 (" + fileSize + ")", true);
         }
         log("Filesize: " + fileSize);
 
@@ -157,21 +178,21 @@ public class ServerConnection implements Runnable{
         log("Upload finished");
     }
 
-    private void uploadError(ClientUploadException e) throws IOException {
-        log(e.getMessage());
-
-        log("Sending error message to client");
-        output.writeBoolean(false);
-        output.writeUTF(e.getMessage());
-    }
-
     private void log(String msg) {
         System.out.println("[Connection " + id + "] " + msg);
     }
 }
 
-class ClientUploadException extends Exception {
-    ClientUploadException(String message) {
+class ClientError extends Exception {
+    protected boolean sendErrorBack;
+
+    ClientError(String message) {
         super(message);
+        this.sendErrorBack = false;
+    }
+
+    ClientError(String message, boolean sendErrorBack) {
+        super(message);
+        this.sendErrorBack = sendErrorBack;
     }
 }
