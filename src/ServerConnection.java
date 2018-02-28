@@ -11,7 +11,7 @@ public class ServerConnection implements Runnable{
     }
 
     public void run() {
-        log("Connected");
+        log("Client connected");
 
         try (DataInputStream input  = new DataInputStream(clientSocket.getInputStream());
              DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream())) {
@@ -54,7 +54,7 @@ public class ServerConnection implements Runnable{
             e.printStackTrace();
         }
 
-        log("Disconnected");
+        log("Client disconnected");
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
