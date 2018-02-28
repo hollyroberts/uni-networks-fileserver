@@ -23,7 +23,7 @@
                   <Label text="IP Address:" />
                   <Label text="Port:" GridPane.rowIndex="1" />
                   <TextField maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" />
-                  <TextField maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
