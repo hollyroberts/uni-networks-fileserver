@@ -10,6 +10,7 @@ public class ClientGUI extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("client.fxml"));
         stage.setTitle("Client");
         stage.setScene(new Scene(root, 600, 400));
+        stage.getScene().getStylesheets().add(getClass().getResource("client.css").toExternalForm());
         stage.setMinWidth(400);
         stage.setMinHeight(300);
         stage.show();
