@@ -64,7 +64,7 @@ public class ServerConnection implements Runnable{
     }
 
     private void list(DataOutputStream out) throws IOException {
-        Log.log("Sending listings to client");
+        log("Sending listings to client");
         List<String> listings = new ArrayList<>();
 
         // Get listings by traversing through source directory
@@ -81,7 +81,7 @@ public class ServerConnection implements Runnable{
             out.writeUTF(listing);
         }
 
-        Log.log("Sent listings to client");
+        log("Sent listings to client");
     }
 
     private void upload(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException, ClientUploadMetaData {
