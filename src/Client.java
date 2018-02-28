@@ -1,7 +1,9 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Files;
 
 class Client {
     // Connection details
@@ -15,11 +17,15 @@ class Client {
         this.out = output;
     }
 
-    private void upload() throws IOException, InterruptedException {
+    private void upload(File file, String filename) throws IOException, InterruptedException {
+        Log.log("Reading file from disk");
+        byte[] bytes = Files.readAllBytes(file.toPath());
+
+        Log.log("Sending UPLD operation to server");
         out.writeUTF("UPLD");
-        out.writeShort(12);
-        out.writeChars("Hello World!");
-        out.writeInt(-500);
+        out.writeShort(filename.length());
+        out.writeChars(filename);
+        out.writeInt(bytes.length);
 
         Misc.waitForInput(in, 1);
         boolean status = in.readBoolean();
