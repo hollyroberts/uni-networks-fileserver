@@ -1,15 +1,16 @@
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public class ClientController {
@@ -102,6 +103,26 @@ public class ClientController {
     }
 
     @FXML private void upload() {
+        // Get file
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Select file");
+        File file = fc.showOpenDialog(getStage());
+
+        if (file == null) {
+            return;
+        }
+
+        // Get filename
+        TextInputDialog dialog = new TextInputDialog(file.getName());
+        dialog.setTitle("Enter filename");
+        dialog.setContentText("Filename to save on server:");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+        if (!result.isPresent()) {
+            return;
+        }
+
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
                 return true;
@@ -112,6 +133,10 @@ public class ClientController {
             setUIState(conn != null);
         });
         startTask(task);
+    }
+
+    private Stage getStage() {
+        return (Stage) listView.getScene().getWindow();
     }
 
     private void startTask(Task task) {
