@@ -46,6 +46,7 @@ public class ClientController {
         upld.setDisable(!connected);
     }
 
+    @FXML
     private void connect() {
         // Get IP/Port
         String ip = textIP.getText();

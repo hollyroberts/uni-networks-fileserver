@@ -27,7 +27,7 @@
                </children>
             </GridPane>
             <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-            <Button fx:id="connect" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="80.0" text="CONN" />
+            <Button fx:id="connect" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#connect" prefWidth="80.0" text="CONN" />
             <Button fx:id="quit" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="80.0" text="QUIT" />
          </children>
          <VBox.margin>
