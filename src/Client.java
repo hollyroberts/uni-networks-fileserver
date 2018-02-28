@@ -17,7 +17,7 @@ class Client {
         this.out = output;
     }
 
-    public void upload(File file, String filename) throws IOException, InterruptedException {
+    public boolean upload(File file, String filename) throws IOException, InterruptedException {
         Log.log("Reading file from disk");
         byte[] bytes = Files.readAllBytes(file.toPath());
 
@@ -28,13 +28,17 @@ class Client {
         out.writeInt(bytes.length);
 
         Misc.waitForInput(in, 1);
-        boolean status = in.readBoolean();
-        if (!status) {
+        if (!in.readBoolean()) {
             Misc.waitForInput(in, 1);
             String reason = in.readUTF();
-            System.out.println("Server rejected request");
-            System.out.println("Reason: " + reason);
+            Log.log("Server rejected request");
+            Log.log("Reason: " + reason);
+            return false;
         }
+
+        Log.log("Sending data to server");
+
+        return true;
     }
 
     public static Client connect(String ip, int port) {
