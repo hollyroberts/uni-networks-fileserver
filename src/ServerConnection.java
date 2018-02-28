@@ -66,12 +66,7 @@ public class ServerConnection implements Runnable{
 
             switch (operation) {
                 case "UPLD":
-                    try {
-                        upload();
-                    } catch (ClientError e) {
-                        uploadError(e);
-                        break wait;
-                    }
+                    upload();
                     break;
                 case "LIST":
                     list();
@@ -90,6 +85,10 @@ public class ServerConnection implements Runnable{
                     break wait;
             }
         }
+    }
+
+    private void download() throws IOException, ClientError {
+
     }
 
     private void list() throws IOException {
