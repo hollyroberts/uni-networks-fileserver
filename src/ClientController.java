@@ -7,11 +7,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -101,6 +97,17 @@ public class ClientController {
         startTask(task);
     }
 
+    @FXML private void list() {
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override protected Boolean call() {
+                return conn.list();
+            }
+        };
+
+        updateOnTaskEnd(task);
+        startTask(task);
+    }
+
     @FXML private void quit() {
         conn.quit();
         conn = null;
@@ -137,6 +144,15 @@ public class ClientController {
             }
         };
 
+        updateOnTaskEnd(task);
+        startTask(task);
+    }
+
+    private Stage getStage() {
+        return (Stage) listView.getScene().getWindow();
+    }
+
+    private void updateOnTaskEnd(Task<Boolean> task) {
         task.setOnSucceeded(event -> {
             if (!task.getValue()) {
                 conn.quit();
@@ -145,11 +161,6 @@ public class ClientController {
 
             setUIState(conn != null);
         });
-        startTask(task);
-    }
-
-    private Stage getStage() {
-        return (Stage) listView.getScene().getWindow();
     }
 
     private void startTask(Task task) {
