@@ -110,6 +110,10 @@ public class ServerConnection implements Runnable{
             return;
         }
 
+        // Send the file size back to the client
+        // Since we're limited to 32 bit integers for the file size, then this will cause the server to crash on files larger than 2^31 bytes
+        output.writeInt((int) file.length());
+
         // Read file from disk while we wait for client to respond
         log("Reading file from disk");
         byte[] bytes = Files.readAllBytes(file.toPath());
