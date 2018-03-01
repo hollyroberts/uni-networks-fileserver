@@ -179,13 +179,11 @@ public class ClientController {
     }
 
     private void saveFile(String suggestedName, byte[] data) {
-        File suggestedFile = new File(BASE_DIR + suggestedName);
-
         // Get file
         FileChooser fc = new FileChooser();
         fc.setTitle("Save file");
-        fc.setInitialDirectory(suggestedFile);
-        fc.setInitialFileName(suggestedFile.getName());
+        fc.setInitialDirectory(new File(BASE_DIR));
+        fc.setInitialFileName(new File(suggestedName).getName());
         File outFile = fc.showSaveDialog(getStage());
 
         if (outFile == null) {
