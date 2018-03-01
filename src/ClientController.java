@@ -155,6 +155,7 @@ public class ClientController {
         // Get file
         FileChooser fc = new FileChooser();
         fc.setTitle("Select file");
+        fc.setInitialDirectory(new File(BASE_DIR));
         File file = fc.showOpenDialog(getStage());
 
         if (file == null) {
@@ -178,7 +179,7 @@ public class ClientController {
     }
 
     private void saveFile(String suggestedName, byte[] data) {
-        File suggestedFile = new File(suggestedName);
+        File suggestedFile = new File(BASE_DIR + suggestedName);
 
         // Get file
         FileChooser fc = new FileChooser();

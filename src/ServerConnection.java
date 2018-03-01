@@ -31,12 +31,12 @@ public class ServerConnection implements Runnable{
                 log(e.getMessage());
 
                 if (e.sendErrorBack) {
-                    Log.log("Sending error message back to client");
+                    log("Sending error message back to client");
                     output.writeBoolean(false);
                     output.writeUTF(e.getMessage());
                 }
 
-                Log.log("Attempting to end connection gracefully");
+                log("Attempting to end connection gracefully");
             }
 
             output.close();
@@ -88,7 +88,7 @@ public class ServerConnection implements Runnable{
     }
 
     private void download() throws IOException, ClientError {
-        Log.log("Client is requesting to download a file");
+        log("Client is requesting to download a file");
 
         short filenameLength = input.readShort();
         if (filenameLength <= 0) {
@@ -105,24 +105,24 @@ public class ServerConnection implements Runnable{
         // Check if file exists
         File file = new File(fullPath);
         if (!file.exists()) {
-            Log.log("The file \"" + filename + "\" does not exist on the server");
+            log("The file \"" + filename + "\" does not exist on the server");
             output.writeInt(-1);
             return;
         }
 
         // Read file from disk while we wait for client to respond
-        Log.log("Reading file from disk");
+        log("Reading file from disk");
         byte[] bytes = Files.readAllBytes(file.toPath());
 
         // Wait for client to return ready
         if (!input.readBoolean()) {
-            Log.log("Client returned false for ready status");
+            log("Client returned false for ready status");
             return;
         }
 
         // Send bytes to client
         output.write(bytes);
-        Log.log("Bytes sent");
+        log("Bytes sent");
     }
 
     private void list() throws IOException {
