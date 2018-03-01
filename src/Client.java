@@ -35,20 +35,6 @@ class Client {
 
         // If bytes is null then some error has occurred, but it's not fatal
         return new DownloadedFile(false, bytes);
-
-        // Save to disk
-        // Write file out
-        File outFile = new File(filename);
-        //noinspection ResultOfMethodCallIgnored
-        outFile.getParentFile().mkdirs();
-        try (FileOutputStream stream = new FileOutputStream(outFile)) {
-            stream.write(bytes);
-
-
-        } catch (IOException e) {
-            Log.log("Error writing file to disk");
-            Log.log(e.getMessage());
-        }
     }
 
     private byte[] downloadFromServer(String filename) throws IOException {

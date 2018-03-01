@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -175,7 +177,30 @@ public class ClientController {
     }
 
     private void saveFile(String suggestedName, byte[] data) {
+        File suggestedFile = new File(suggestedName);
 
+        // Get file
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save file");
+        fc.setInitialDirectory(suggestedFile);
+        fc.setInitialFileName(suggestedFile.getName());
+        File outFile = fc.showSaveDialog(getStage());
+
+        if (outFile == null) {
+            return;
+        }
+
+        // Make directory if it doesn't exist (for some reason)
+        // Write data out
+        //noinspection ResultOfMethodCallIgnored
+        outFile.getParentFile().mkdirs();
+        try (FileOutputStream stream = new FileOutputStream(outFile)) {
+            stream.write(data);
+            Log.log("File saved to disk");
+        } catch (IOException e) {
+            Log.log("Error writing file to disk");
+            Log.log(e.getMessage());
+        }
     }
 
     private Stage getStage() {
