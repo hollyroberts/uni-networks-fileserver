@@ -108,7 +108,7 @@ public class ClientController {
         // Get filename
         Optional<String> result = getInput("", "Enter filename", "File to download from server:");
 
-        Task<Boolean> task = new Task<Boolean>() {
+        Task<Byte> task = new Task<Boolean>() {
             @Override protected Boolean call() {
                 return true;//conn.download();
             }
@@ -146,7 +146,7 @@ public class ClientController {
         }
 
         // Get filename
-        Optional<String> result = getInput(file.getName(), "Enter filename", "Filename to save on server:");
+        Optional<String> result = getInput(file.getName(), "Enter the filename to save on the server", "Filename:");
         if (!result.isPresent()) {
             return;
         }
@@ -210,5 +210,27 @@ class Log {
             list.getItems().add(msg);
             list.scrollTo(list.getItems().size() - 1);
         });
+    }
+}
+
+class DownloadedFile {
+    private String filename;
+    private byte[] data;
+
+    public DownloadedFile(String filename, byte[] data) {
+        this.filename = filename;
+        this.data = data;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public boolean containsData() {
+        return data != null;
     }
 }
