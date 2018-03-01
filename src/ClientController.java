@@ -186,6 +186,7 @@ public class ClientController {
     private Optional<String> getInput(String title, String header, String content) {
         TextInputDialog dialog = new TextInputDialog(title);
         dialog.initStyle(StageStyle.UTILITY);
+        dialog.setTitle("");
         dialog.setHeaderText(header);
         dialog.setContentText(content);
         dialog.initOwner(getStage());
