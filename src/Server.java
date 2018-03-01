@@ -16,7 +16,7 @@ public class Server {
         while(true){
             try {
                 Socket clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout(5000);
+                clientSocket.setSoTimeout(TIMEOUT);
                 new Thread(new ServerConnection(clientSocket, curID)).start();
                 curID++;
             } catch (IOException e) {
