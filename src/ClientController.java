@@ -105,7 +105,14 @@ public class ClientController {
 
     @FXML
     private void download() {
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override protected Boolean call() {
+                return conn.download();
+            }
+        };
 
+        updateOnTaskEnd(task);
+        startTask(task);
     }
 
     @FXML private void list() {
@@ -136,15 +143,7 @@ public class ClientController {
         }
 
         // Get filename
-        TextInputDialog dialog = new TextInputDialog(file.getName());
-        dialog.initStyle(StageStyle.UTILITY);
-        dialog.setHeaderText("Enter filename");
-        dialog.setContentText("Filename to save on server:");
-        dialog.initOwner(getStage());
-        dialog.initModality(Modality.WINDOW_MODAL);
-
-        // Traditional way to get the response value.
-        Optional<String> result = dialog.showAndWait();
+        Optional<String> result = getInput(file.getName(), "Enter filename", "Filename to save on server:");
         if (!result.isPresent()) {
             return;
         }
@@ -179,6 +178,18 @@ public class ClientController {
         Thread th = new Thread(task);
         th.setDaemon(true);
         th.start();
+    }
+
+    private Optional<String> getInput(String title, String header, String content) {
+        TextInputDialog dialog = new TextInputDialog(title);
+        dialog.initStyle(StageStyle.UTILITY);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+        dialog.initOwner(getStage());
+        dialog.initModality(Modality.WINDOW_MODAL);
+
+        return dialog.showAndWait();
+
     }
 }
 
