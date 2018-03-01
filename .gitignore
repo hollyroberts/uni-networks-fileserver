@@ -25,4 +25,6 @@ hs_err_pid*
 out
 .idea
 files
+client_files
+server_files
 FTP NDS.iml
