@@ -14,7 +14,7 @@ class Client {
         this.out = output;
     }
 
-    public boolean download(String filename) {
+    public DownloadedFile download(String filename) {
         long startTime = System.currentTimeMillis();
 
         // Download bytes from server

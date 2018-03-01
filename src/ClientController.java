@@ -107,15 +107,27 @@ public class ClientController {
     private void download() {
         // Get filename
         Optional<String> result = getInput("", "Enter filename", "File to download from server:");
+        if (!result.isPresent()) {
+            return;
+        }
 
-        Task<Byte> task = new Task<Boolean>() {
-            @Override protected Boolean call() {
-                return true;//conn.download();
+        Task<DownloadedFile> task = new Task<DownloadedFile>() {
+            @Override protected DownloadedFile call() {
+                return conn.download(result.get());
             }
         };
 
-        //updateOnTaskEnd(task);
-        //startTask(task);
+        task.setOnSucceeded(event -> {
+            if (task.getValue().hadSocketError()) {
+                conn.quit();
+                conn = null;
+            } else if (task.getValue().containsData()) {
+                // Save to disk
+            }
+
+            setUIState(conn != null);
+        });
+        startTask(task);
     }
 
     @FXML private void list() {
@@ -214,20 +226,20 @@ class Log {
 }
 
 class DownloadedFile {
-    private String filename;
     private byte[] data;
+    private boolean socketError;
 
-    public DownloadedFile(String filename, byte[] data) {
-        this.filename = filename;
+    public DownloadedFile(boolean socketError, byte[] data) {
+        this.socketError = socketError;
         this.data = data;
-    }
-
-    public String getFilename() {
-        return filename;
     }
 
     public byte[] getData() {
         return data;
+    }
+
+    public boolean hadSocketError() {
+        return socketError;
     }
 
     public boolean containsData() {
