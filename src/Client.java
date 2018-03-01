@@ -66,6 +66,7 @@ class Client {
             return null;
         }
 
+        out.writeBoolean(true);
         Log.log("Downloading from server");
 
         // Declare our array of bytes

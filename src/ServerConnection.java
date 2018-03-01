@@ -140,7 +140,7 @@ public class ServerConnection implements Runnable{
         // Send listings to client
         output.writeInt(listings.size());
         for (String listing : listings) {
-            //out.writeUTF(listing);
+            output.writeUTF(listing);
         }
 
         log("Sent listings to client");

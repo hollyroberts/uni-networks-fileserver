@@ -103,6 +103,11 @@ public class ClientController {
         startTask(task);
     }
 
+    @FXML
+    private void download() {
+
+    }
+
     @FXML private void list() {
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
@@ -180,7 +185,7 @@ public class ClientController {
 class Log {
     private static ListView<String> list;
 
-    public static void init(ListView list) {
+    public static void init(ListView<String> list) {
         Log.list = list;
     }
 
