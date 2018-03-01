@@ -105,14 +105,17 @@ public class ClientController {
 
     @FXML
     private void download() {
+        // Get filename
+        Optional<String> result = getInput("", "Enter filename", "File to download from server:");
+
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
-                return conn.download();
+                return true;//conn.download();
             }
         };
 
-        updateOnTaskEnd(task);
-        startTask(task);
+        //updateOnTaskEnd(task);
+        //startTask(task);
     }
 
     @FXML private void list() {
