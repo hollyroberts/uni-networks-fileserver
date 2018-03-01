@@ -23,13 +23,18 @@ class Client {
             bytes = downloadFromServer(filename);
         } catch (IOException e) {
             Log.log(e.getMessage());
-            return false;
+            return new DownloadedFile(true, null);
+        }
+
+        // Gather statistics
+        if (bytes != null) {
+            long endTime = System.currentTimeMillis();
+            double timeTaken = (endTime - startTime) / 1000;
+            Log.log(String.format("%,d bytes transferred in %,.2fs", bytes.length, timeTaken));
         }
 
         // If bytes is null then some error has occurred, but it's not fatal
-        if (bytes == null) {
-            return true;
-        }
+        return new DownloadedFile(false, bytes);
 
         // Save to disk
         // Write file out
@@ -39,16 +44,11 @@ class Client {
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(bytes);
 
-            // Gather statistics
-            long endTime = System.currentTimeMillis();
-            double timeTaken = (endTime - startTime) / 1000;
-            Log.log(String.format("%,d bytes transferred in %,.2fs", bytes.length, timeTaken));
+
         } catch (IOException e) {
             Log.log("Error writing file to disk");
             Log.log(e.getMessage());
         }
-
-        return true;
     }
 
     private byte[] downloadFromServer(String filename) throws IOException {

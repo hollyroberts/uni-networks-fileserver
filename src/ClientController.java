@@ -118,11 +118,12 @@ public class ClientController {
         };
 
         task.setOnSucceeded(event -> {
-            if (task.getValue().hadSocketError()) {
+            DownloadedFile df = task.getValue();
+            if (df.hadSocketError()) {
                 conn.quit();
                 conn = null;
-            } else if (task.getValue().containsData()) {
-                // Save to disk
+            } else if (df.containsData()) {
+                saveFile(result.get(), df.getData());
             }
 
             setUIState(conn != null);
@@ -171,6 +172,10 @@ public class ClientController {
 
         updateOnTaskEnd(task);
         startTask(task);
+    }
+
+    private void saveFile(String suggestedName, byte[] data) {
+
     }
 
     private Stage getStage() {
