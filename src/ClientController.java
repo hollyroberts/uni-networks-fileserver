@@ -61,6 +61,10 @@ public class ClientController {
         Log.init(listView);
     }
 
+    private void setUIState() {
+        setUIState(conn != null);
+    }
+
     private void setUIState(boolean connected) {
         disableConnectionGUI(connected);
         disableOperations(!connected);
@@ -100,7 +104,7 @@ public class ClientController {
 
         task.setOnSucceeded(event -> {
             conn = task.getValue();
-            setUIState(conn != null);
+            setUIState();
         });
 
         startTask(task);
@@ -126,7 +130,7 @@ public class ClientController {
                 quit();
                 return;
             } else if (task1.getValue() == -1) {
-                setUIState(conn != null);
+                setUIState();
                 return;
             }
 
@@ -162,7 +166,7 @@ public class ClientController {
                 saveFile(result.get(), df.getData());
             }
 
-            setUIState(conn != null);
+            setUIState();
         });
         startTask(task);
     }
@@ -246,7 +250,7 @@ public class ClientController {
                 quit();
                 return;
             } else {
-                setUIState(conn != null);
+                setUIState();
             }
         });
     }
