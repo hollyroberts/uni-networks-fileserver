@@ -121,9 +121,9 @@ public class ClientController {
         };
 
         task1.setOnSucceeded(event -> {
+            // If response is 0 then a server/socket error occurred
             if (task1.getValue() == 0) {
-                conn.quit();
-                setUIState(conn != null);
+                quit();
                 return;
             } else if (task1.getValue() == -1) {
                 setUIState(conn != null);
@@ -156,7 +156,7 @@ public class ClientController {
         task.setOnSucceeded(event -> {
             DownloadedFile df = task.getValue();
             if (df.hadSocketError()) {
-                conn.quit();
+                quit();
                 return;
             } else if (df.containsData()) {
                 saveFile(result.get(), df.getData());
@@ -243,7 +243,7 @@ public class ClientController {
     private void updateOnTaskEnd(Task<Boolean> task) {
         task.setOnSucceeded(event -> {
             if (!task.getValue()) {
-                conn.quit();
+                quit();
                 return;
             } else {
                 setUIState(conn != null);
