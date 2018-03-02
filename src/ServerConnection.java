@@ -183,7 +183,7 @@ public class ServerConnection implements Runnable{
         long startTime = System.currentTimeMillis();
 
         String fileName = getFilename();
-        String fullPath = filenameAddBaseDir(fileName)
+        String fullPath = filenameAddBaseDir(fileName);
         log("Filename: " + fileName);
 
         // Get filesize
