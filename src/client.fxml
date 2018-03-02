@@ -67,7 +67,7 @@
                   <Insets top="10.0" />
                </HBox.margin>
                <children>
-                  <Button fx:id="delf" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="80.0" text="DELF" />
+                  <Button fx:id="delf" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#delete" prefHeight="40.0" prefWidth="80.0" text="DELF" />
                   <Button fx:id="dwld" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#download" prefHeight="40.0" prefWidth="80.0" text="DWLD" />
                   <Button fx:id="list" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#list" prefHeight="40.0" prefWidth="80.0" text="LIST" />
                   <Button fx:id="upld" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#upload" prefHeight="40.0" prefWidth="80.0" text="UPLD" />
