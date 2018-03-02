@@ -16,7 +16,7 @@ class Client {
 
     // Returns 1 or -1 based on the server response
     // If an exception occurs then 0 is returned
-    public int delete(String filename) {
+    public int deleteRequest(String filename) {
         try {
             // Send filename length and filename as chars
             out.writeShort(filename.length());
@@ -29,6 +29,28 @@ class Client {
             Log.log(e.getMessage());
             return 0;
         }
+    }
+
+    // Returns true if everything went well without any server/socket errors
+    public boolean deleteConfirm(boolean delete) {
+        try {
+            // The client sends the users confirm status
+            out.writeBoolean(delete);
+
+            // Either display the servers response, or display the cancellation
+            if (delete) {
+                System.out.println(in.readUTF());
+            } else {
+                Log.log("Delete abandoned by the user");
+            }
+        } catch (IOException e) {
+            // Handle errors
+            Log.log("Error sending confirmation input to server");
+            Log.log(e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     public DownloadedFile download(String filename) {

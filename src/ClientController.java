@@ -116,7 +116,7 @@ public class ClientController {
 
         Task<Integer> task1 = new Task<Integer>() {
             @Override protected Integer call() {
-                return conn.delete(result.get());
+                return conn.deleteRequest(result.get());
             }
         };
 
