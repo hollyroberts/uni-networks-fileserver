@@ -109,10 +109,14 @@ public class ClientController {
     @FXML
     private void delete() {
         // Get the filename to delete
+        Optional<String> result = getInput("Enter Filename", "Choose file to delete", "Enter filename:");
+        if (!result.isPresent()) {
+            return;
+        }
 
         Task<Integer> task1 = new Task<Integer>() {
             @Override protected Integer call() {
-                return conn.delete("TODO");
+                return conn.delete(result.get());
             }
         };
 
