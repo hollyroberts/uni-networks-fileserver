@@ -292,7 +292,7 @@ class DownloadedFile {
     private byte[] data;
     private boolean socketError;
 
-    public DownloadedFile(boolean socketError, byte[] data) {
+    DownloadedFile(boolean socketError, byte[] data) {
         this.socketError = socketError;
         this.data = data;
     }

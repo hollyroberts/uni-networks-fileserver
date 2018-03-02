@@ -14,8 +14,21 @@ class Client {
         this.out = output;
     }
 
+    // Returns 1 or -1 based on the server response
+    // If an exception occurs then 0 is returned
     public int delete(String filename) {
-        return 0;
+        try {
+            // Send filename length and filename as chars
+            out.writeShort(filename.length());
+            out.writeChars(filename);
+
+            // Wait for server response
+            return in.readInt();
+        } catch (IOException e) {
+            // Handle error
+            Log.log(e.getMessage());
+            return 0;
+        }
     }
 
     public DownloadedFile download(String filename) {
