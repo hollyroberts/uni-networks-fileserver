@@ -139,6 +139,13 @@ class Client {
             socket.close();
         } catch (IOException e) {
             Log.log("Error quitting gracefully (" + e.getMessage() + ")");
+            Log.log("Force closing");
+
+            // Force close
+            try { out.close(); } catch (IOException f) { /* Do nothing */ }
+            try { in.close(); } catch (IOException f) { /* Do nothing */ }
+            try { socket.close(); } catch (IOException f) { /* Do nothing */ }
+
         }
         Log.log("Session closed");
     }
