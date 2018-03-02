@@ -14,6 +14,10 @@ class Client {
         this.out = output;
     }
 
+    public int delete(String filename) {
+        return 0;
+    }
+
     public DownloadedFile download(String filename) {
         long startTime = System.currentTimeMillis();
 

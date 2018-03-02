@@ -107,6 +107,35 @@ public class ClientController {
     }
 
     @FXML
+    private void delete() {
+        // Get the filename to delete
+
+        Task<Integer> task1 = new Task<Integer>() {
+            @Override protected Integer call() {
+                return conn.delete("TODO");
+            }
+        };
+
+        task1.setOnSucceeded(event -> {
+            if (task1.getValue() == 0) {
+                conn.quit();
+                setUIState(conn != null);
+                return;
+            } else if (task1.getValue() == -1) {
+                setUIState(conn != null);
+                return;
+            }
+
+            // If the file exists then prompt user to delete
+            Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+            a.setTitle("Confirm");
+            a.setHeaderText("Delete file?");
+            a.showAndWait();
+        });
+        startTask(task1);
+    }
+
+    @FXML
     private void download() {
         // Get filename
         Optional<String> result = getInput("", "Enter filename", "File to download from server:");
@@ -124,7 +153,7 @@ public class ClientController {
             DownloadedFile df = task.getValue();
             if (df.hadSocketError()) {
                 conn.quit();
-                conn = null;
+                return;
             } else if (df.containsData()) {
                 saveFile(result.get(), df.getData());
             }
@@ -211,10 +240,10 @@ public class ClientController {
         task.setOnSucceeded(event -> {
             if (!task.getValue()) {
                 conn.quit();
-                conn = null;
+                return;
+            } else {
+                setUIState(conn != null);
             }
-
-            setUIState(conn != null);
         });
     }
 

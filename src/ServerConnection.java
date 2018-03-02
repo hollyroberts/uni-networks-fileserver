@@ -87,6 +87,10 @@ public class ServerConnection implements Runnable{
         }
     }
 
+    private void delete() throws IOException, ClientError {
+
+    }
+
     private void download() throws IOException, ClientError {
         log("Client is requesting to download a file");
 
