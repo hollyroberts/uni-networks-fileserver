@@ -90,15 +90,42 @@ public class ServerConnection implements Runnable{
     private void delete() throws IOException, ClientError {
         log("Client is requesting to delete a file");
 
+        // Receive filename and add base directory
         String filename = getFilename();
-        String fullPath = filenameToFullPath(filename);
+        String fullPath = filenameAddBaseDir(filename);
+
+        // Server returns 1 or -1 based on whether or not the file exists
+        File file = new File(fullPath);
+        if (file.exists()) {
+            output.writeInt(1);
+        } else {
+            output.writeInt(-1);
+        }
+
+        // Wait for delete confirm to be sent by the client
+        // True for confirm delete, false otherwise
+        if (!input.readBoolean()) {
+            log("Client did not confirm file deletion");
+            return;
+        }
+
+        // Delete file
+        String msg;
+        if (file.delete()) {
+            msg = "File deleted";
+        } else {
+            msg = "Error deleting file";
+        }
+
+        log(msg);
+        output.writeUTF(msg);
     }
 
     private void download() throws IOException, ClientError {
         log("Client is requesting to download a file");
 
         String filename = getFilename();
-        String fullPath = filenameToFullPath(filename);
+        String fullPath = filenameAddBaseDir(filename);
 
         // Check if file exists
         File file = new File(fullPath);
@@ -155,7 +182,7 @@ public class ServerConnection implements Runnable{
         long startTime = System.currentTimeMillis();
 
         String fileName = getFilename();
-        String fullPath = filenameToFullPath(fileName)
+        String fullPath = filenameAddBaseDir(fileName)
         log("Filename: " + fileName);
 
         // Get filesize
@@ -217,7 +244,7 @@ public class ServerConnection implements Runnable{
         return new String(fileNameChar);
     }
 
-    private String filenameToFullPath(String filename) {
+    private String filenameAddBaseDir(String filename) {
         return Server.BASE_DIR + filename;
     }
 
