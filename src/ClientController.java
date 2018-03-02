@@ -138,8 +138,21 @@ public class ClientController {
             Alert a = new Alert(Alert.AlertType.CONFIRMATION);
             a.setTitle("Confirm");
             a.setHeaderText("Delete file?");
-            a.showAndWait();
+            Optional<ButtonType> result2 = a.showAndWait();
+
+            // Create a new task to send the confirmation
+            Task<Boolean> task2 = new Task<Boolean>() {
+                @Override protected Boolean call() {
+                    boolean confirm = result2.isPresent() && result2.get() == ButtonType.OK;
+                    return conn.deleteConfirm(confirm);
+                }
+            };
+
+            // Start the task
+            updateOnTaskEnd(task2);
+            startTask(task2);
         });
+
         startTask(task1);
     }
 
@@ -248,7 +261,6 @@ public class ClientController {
         task.setOnSucceeded(event -> {
             if (!task.getValue()) {
                 quit();
-                return;
             } else {
                 setUIState();
             }
