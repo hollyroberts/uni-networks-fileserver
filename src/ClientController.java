@@ -78,6 +78,7 @@ public class ClientController {
     private void disableConnectionGUI(boolean disable) {
         textIP.setDisable(disable);
         textPort.setDisable(disable);
+        textTimeout.setDisable(disable);
         connect.setDisable(disable);
     }
 
