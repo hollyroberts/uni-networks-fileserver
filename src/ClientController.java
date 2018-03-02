@@ -17,7 +17,7 @@ public class ClientController {
     private static String DEFAULT_IP = "localhost";
     private static int DEFAULT_PORT = 1234;
     private static int DEFAULT_TIMEOUT = 5000;
-    private static String BASE_DIR = "client_files/";
+    static String BASE_DIR = "client_files/";
 
     // Connection UI
     @FXML private TextField textIP;
