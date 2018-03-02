@@ -75,6 +75,7 @@ public class ServerConnection implements Runnable{
                     download();
                     break;
                 case "DELF":
+                    delete();
                     break;
                 case "QUIT":
                     log("QUIT triggered by client");
