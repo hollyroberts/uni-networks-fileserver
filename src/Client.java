@@ -39,6 +39,7 @@ class Client {
         try {
             bytes = downloadFromServer(filename);
         } catch (IOException e) {
+            // Handle errors, errors here should cause a disconnect
             Log.log(e.getMessage());
             return new DownloadedFile(true, null);
         }
@@ -55,11 +56,13 @@ class Client {
     }
 
     private byte[] downloadFromServer(String filename) throws IOException {
+        // Send operation and filename
         Log.log("Sending DWLD operation to server");
         out.writeUTF("DWLD");
         out.writeShort(filename.length());
         out.writeChars(filename);
 
+        // Read server response, handle weird values (out of spec)
         int fileSize = in.readInt();
         if (fileSize == -1) {
             Log.log("File does not exist on server");
@@ -69,6 +72,7 @@ class Client {
             return null;
         }
 
+        // Confirm readiness to download
         out.writeBoolean(true);
         Log.log("Downloading from server");
 
@@ -90,7 +94,8 @@ class Client {
 
         try {
             listings = retrieveListings();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            // Handle errors
             Log.log(e.getMessage());
             return false;
         }
@@ -104,7 +109,8 @@ class Client {
         return true;
     }
 
-    private String[] retrieveListings() throws IOException, InterruptedException {
+    private String[] retrieveListings() throws IOException {
+        // Send operation
         Log.log("Retrieving listings");
         out.writeUTF("LIST");
 
@@ -146,6 +152,7 @@ class Client {
         try {
             bytes = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
+            // Handle errors. Errors reading file are not fatal to the server-client connection
             Log.log(e.getMessage());
             return true;
         }
@@ -154,6 +161,7 @@ class Client {
         try {
             uploadFile(filename, bytes);
         } catch (IOException e) {
+            // Handle errors
             Log.log(e.getMessage());
             return false;
         }
@@ -163,12 +171,14 @@ class Client {
 
     // The code that performs the upload (wrapped in upload to handle errors)
     private void uploadFile(String filename, byte[] bytes) throws IOException {
+        // Send operation, filename, and length of file
         Log.log("Sending UPLD operation to server and waiting for response");
         out.writeUTF("UPLD");
         out.writeShort(filename.length());
         out.writeChars(filename);
         out.writeInt(bytes.length);
 
+        // Get server confirmation
         if (!in.readBoolean()) {
             String reason = in.readUTF();
             Log.log("Server rejected request");
@@ -176,11 +186,14 @@ class Client {
             return;
         }
 
+        // Send file
         Log.log("Sending data to server");
         out.write(bytes);
         Log.log(in.readUTF());
     }
 
+
+    // Factory method to create a client instance
     public static Client connect(String ip, int port, int timeout) {
         try {
             Log.log("Connecting to server");
@@ -192,9 +205,9 @@ class Client {
 
             return new Client(socket, in, out);
         } catch (IOException e) {
+            // Handle errors
             Log.log(e.getMessage());
+            return null;
         }
-
-        return null;
     }
 }
