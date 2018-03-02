@@ -53,6 +53,8 @@ class Client {
         return true;
     }
 
+    // Returns an object representing the file downloaded
+    // This object also indicates whether or not errors occurred
     public DownloadedFile download(String filename) {
         long startTime = System.currentTimeMillis();
 
@@ -111,6 +113,7 @@ class Client {
         return bytes;
     }
 
+    // Returns true if everything went well without any server/socket errors
     public boolean list() {
         String[] listings;
 
