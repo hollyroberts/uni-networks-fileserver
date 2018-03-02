@@ -122,6 +122,7 @@ class Client {
         } catch (IOException e) {
             // Handle errors
             Log.log(e.getMessage());
+            e.printStackTrace();
             return false;
         }
 
@@ -186,6 +187,7 @@ class Client {
         } catch (IOException e) {
             // Handle errors. Errors reading file are not fatal to the server-client connection
             Log.log(e.getMessage());
+            e.printStackTrace();
             return true;
         }
 
@@ -195,6 +197,7 @@ class Client {
         } catch (IOException e) {
             // Handle errors
             Log.log(e.getMessage());
+            e.printStackTrace();
             return false;
         }
 
