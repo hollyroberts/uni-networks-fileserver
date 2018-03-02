@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,6 +27,18 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
+        // Create base dir if it doesn't exist
+        File bd = new File(BASE_DIR);
+        if (!bd.exists()) {
+            System.out.println("Base directory '" + BASE_DIR + "' does not exist");
+            if (bd.mkdir()) {
+                System.out.println("Directory created");
+            } else {
+                System.out.println("Could not create directory. Errors will probably occur from now on");
+            }
+        }
+
+
         new Server().run();
     }
 }
