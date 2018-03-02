@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class Server {
     private static int PORT_NUMBER = 1234;
-    private static int TIMEOUT = 5000;
+    public static int TIMEOUT = 5000;
     public static String BASE_DIR = "server_files/";
 
     private void run() throws Exception {

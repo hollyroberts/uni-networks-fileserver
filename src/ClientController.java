@@ -17,7 +17,7 @@ public class ClientController {
     private static String DEFAULT_IP = "localhost";
     private static int DEFAULT_PORT = 1234;
     private static int DEFAULT_TIMEOUT = 5000;
-    static String BASE_DIR = "client_files/";
+    public static String BASE_DIR = "client_files/";
 
     // Connection UI
     @FXML private TextField textIP;
@@ -139,6 +139,7 @@ public class ClientController {
             Alert a = new Alert(Alert.AlertType.CONFIRMATION);
             a.setTitle("Confirm");
             a.setHeaderText("Delete file?");
+            a.setContentText("Please note the server gives a 60s timeout to receive confirmation");
             Optional<ButtonType> result2 = a.showAndWait();
 
             // Create a new task to send the confirmation

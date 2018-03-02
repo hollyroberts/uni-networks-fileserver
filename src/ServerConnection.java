@@ -1,3 +1,5 @@
+import org.omg.CORBA.TIMEOUT;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -105,7 +107,12 @@ public class ServerConnection implements Runnable{
 
         // Wait for delete confirm to be sent by the client
         // True for confirm delete, false otherwise
-        if (!input.readBoolean()) {
+        // Adjust socket timeout temporarily to give a 60s grace period
+        socket.setSoTimeout(60 * 1000);
+        boolean confirm = input.readBoolean();
+        socket.setSoTimeout(Server.TIMEOUT);
+
+        if (!confirm) {
             log("Client did not confirm file deletion");
             return;
         }
