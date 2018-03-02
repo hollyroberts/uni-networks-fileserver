@@ -18,12 +18,27 @@ class Client {
     // If an exception occurs then 0 is returned
     public int deleteRequest(String filename) {
         try {
-            // Send filename length and filename as chars
+            // Send operation and filename
+            Log.log("Sending DELF operation to server");
+            out.writeUTF("DELF");
             out.writeShort(filename.length());
             out.writeChars(filename);
 
             // Wait for server response
-            return in.readInt();
+            int response = in.readInt();
+
+            if (response == 1) {
+                // Log the fact that the file exists
+                Log.log("File exists on the server");
+                return response;
+            } else if (response == -1) {
+                Log.log("File does not exist on server");
+                return response;
+            } else {
+                Log.log("Unknown value returned for whether the file exists (" + response + ")");
+                return 0;
+            }
+
         } catch (IOException e) {
             // Handle error
             Log.log(e.getMessage());
@@ -39,7 +54,7 @@ class Client {
 
             // Either display the servers response, or display the cancellation
             if (delete) {
-                System.out.println(in.readUTF());
+                Log.log(in.readUTF());
             } else {
                 Log.log("Delete abandoned by the user");
             }
