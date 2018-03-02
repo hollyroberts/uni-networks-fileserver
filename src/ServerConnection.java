@@ -88,23 +88,17 @@ public class ServerConnection implements Runnable{
     }
 
     private void delete() throws IOException, ClientError {
+        log("Client is requesting to delete a file");
 
+        String filename = getFilename();
+        String fullPath = filenameToFullPath(filename);
     }
 
     private void download() throws IOException, ClientError {
         log("Client is requesting to download a file");
 
-        short filenameLength = input.readShort();
-        if (filenameLength <= 0) {
-            throw new ClientError("Length of filename was not a positive integer (received " + filenameLength + ")");
-        }
-
-        char[] chars = new char[filenameLength];
-        for (int i = 0; i < filenameLength; i++) {
-            chars[i] = input.readChar();
-        }
-        String filename = new String(chars);
-        String fullPath = Server.BASE_DIR + filename;
+        String filename = getFilename();
+        String fullPath = filenameToFullPath(filename);
 
         // Check if file exists
         File file = new File(fullPath);
@@ -160,20 +154,8 @@ public class ServerConnection implements Runnable{
         // Start timer
         long startTime = System.currentTimeMillis();
 
-        // Get length of filename
-        short fileNameLen = input.readShort();
-        if (fileNameLen < 1) {
-            throw new ClientError("Length of filename to upload is less than 0", true);
-        }
-
-        // Wait for filename to be in buffer then read
-        char[] fileNameChar = new char[fileNameLen];
-        for (int i = 0; i < fileNameLen; i++) {
-            fileNameChar[i] = input.readChar();
-        }
-
-        String fileName = new String(fileNameChar);
-        String fullPath = Server.BASE_DIR + fileName;
+        String fileName = getFilename();
+        String fullPath = filenameToFullPath(fileName)
         log("Filename: " + fileName);
 
         // Get filesize
@@ -217,6 +199,26 @@ public class ServerConnection implements Runnable{
         log(response);
         output.writeUTF(response);
         log("Upload finished");
+    }
+
+    private String getFilename() throws IOException, ClientError {
+        // Get length of filename
+        short fileNameLen = input.readShort();
+        if (fileNameLen < 1) {
+            throw new ClientError("Length of filename was not a positive integer (received " + fileNameLen + ")", true);
+        }
+
+        // Wait for filename to be in buffer then read
+        char[] fileNameChar = new char[fileNameLen];
+        for (int i = 0; i < fileNameLen; i++) {
+            fileNameChar[i] = input.readChar();
+        }
+
+        return new String(fileNameChar);
+    }
+
+    private String filenameToFullPath(String filename) {
+        return Server.BASE_DIR + filename;
     }
 
     private void log(String msg) {
