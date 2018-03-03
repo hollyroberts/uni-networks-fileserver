@@ -86,7 +86,8 @@ class Client {
         // Gather statistics
         if (bytes != null) {
             long endTime = System.currentTimeMillis();
-            double timeTaken = (endTime - startTime) / 1000;
+            double timeTaken = (endTime - startTime);
+            timeTaken /= 1000;
             Log.log(String.format("%,d bytes transferred in %,.2fs", bytes.length, timeTaken));
         }
 
