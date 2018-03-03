@@ -11,6 +11,7 @@ public class Server {
 
     private void run() throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
+        System.out.println("Server started on port " + PORT_NUMBER);
 
         int curID = 1;
 
@@ -39,8 +40,10 @@ public class Server {
             }
         }
 
-        // Enter timeout
+        // Get user input for configurable options
         Scanner scanner = new Scanner(System.in);
+
+        // Enter timeout
         System.out.print("Enter socket timeout in ms (Leave empty for default): ");
         String timeoutStr = scanner.nextLine();
 
@@ -51,6 +54,19 @@ public class Server {
             System.out.println(String.format("Timeout set to default value of %,dms", TIMEOUT));
         }
 
+        // Enter port
+        System.out.print("Enter port (Leave empty for default): ");
+        String portStr = scanner.nextLine();
+
+        try {
+            PORT_NUMBER= Integer.valueOf(portStr);
+            System.out.println(String.format("Set port to %,d", PORT_NUMBER));
+        } catch (NumberFormatException e) {
+            System.out.println(String.format("Set port to default value of %,d", PORT_NUMBER));
+        }
+
+        // Run server
+        scanner.close();
         new Server().run();
     }
 }
