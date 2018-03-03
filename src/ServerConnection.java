@@ -100,9 +100,12 @@ public class ServerConnection implements Runnable{
         // Server returns 1 or -1 based on whether or not the file exists
         File file = new File(fullPath);
         if (file.exists()) {
+            log("Waiting for confirmation to delete: " + fullPath);
             output.writeInt(1);
         } else {
+            log("File doesn't exist: " + fullPath);
             output.writeInt(-1);
+            return;
         }
 
         // Wait for delete confirm to be sent by the client
