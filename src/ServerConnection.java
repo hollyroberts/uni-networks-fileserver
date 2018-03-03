@@ -243,7 +243,7 @@ public class ServerConnection implements Runnable{
             throw new ClientError("Length of filename was not a positive integer (received " + fileNameLen + ")", true);
         }
 
-        // Wait for filename to be in buffer then read
+        // Read chars as filename
         char[] fileNameChar = new char[fileNameLen];
         for (int i = 0; i < fileNameLen; i++) {
             fileNameChar[i] = input.readChar();
