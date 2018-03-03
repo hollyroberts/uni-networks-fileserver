@@ -141,10 +141,13 @@ class Client {
             return false;
         }
 
-        // Once listings are retrieved, display to client
-        Log.log("Listings:");
-        for (String listing : listings) {
-            Log.log(listing);
+        // Once listings are retrieved, display to client (if there is at least one listing
+        if (listings != null) {
+
+            Log.log("Listings:");
+            for (String listing : listings) {
+                Log.log(listing);
+            }
         }
 
         return true;
@@ -159,7 +162,7 @@ class Client {
         int numListings = in.readInt();
         if (numListings <= 0) {
             Log.log("Server contains no listings");
-            return new String[0];
+            return null;
         }
 
         // Retrieve listings
