@@ -62,7 +62,7 @@ public class Server {
             PORT_NUMBER= Integer.valueOf(portStr);
             System.out.println(String.format("Set port to %,d", PORT_NUMBER));
         } catch (NumberFormatException e) {
-            System.out.println(String.format("Set port to default value of %,d", PORT_NUMBER));
+            System.out.println("Set port to default value of " + PORT_NUMBER);
         }
 
         // Run server
