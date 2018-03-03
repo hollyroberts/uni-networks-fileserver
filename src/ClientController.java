@@ -114,7 +114,7 @@ public class ClientController {
     @FXML
     private void delete() {
         // Get the filename to delete
-        Optional<String> result = getInput("Enter Filename", "Choose file to delete", "Enter filename:");
+        Optional<String> result = getInput("Choose file to delete", "Enter filename:", "");
         if (!result.isPresent()) {
             return;
         }
@@ -161,7 +161,7 @@ public class ClientController {
     @FXML
     private void download() {
         // Get filename
-        Optional<String> result = getInput("", "Enter filename", "File to download from server:");
+        Optional<String> result = getInput("Enter filename", "File to download from server:", "");
         if (!result.isPresent()) {
             return;
         }
@@ -215,7 +215,7 @@ public class ClientController {
         }
 
         // Get filename
-        Optional<String> result = getInput(file.getName(), "Enter the filename to save on the server", "Filename:");
+        Optional<String> result = getInput("Enter the filename to save on the server", "Filename:", file.getName());
         if (!result.isPresent()) {
             return;
         }
@@ -276,8 +276,8 @@ public class ClientController {
         th.start();
     }
 
-    private Optional<String> getInput(String title, String header, String content) {
-        TextInputDialog dialog = new TextInputDialog(title);
+    private Optional<String> getInput(String header, String content, String defaultValue) {
+        TextInputDialog dialog = new TextInputDialog(defaultValue);
         dialog.initStyle(StageStyle.UTILITY);
         dialog.setTitle("");
         dialog.setHeaderText(header);
