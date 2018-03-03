@@ -94,7 +94,7 @@ public class ServerConnection implements Runnable{
         log("Client is requesting to delete a file");
 
         // Receive filename and add base directory
-        String filename = getFilename();
+        String filename = getFilename(false);
         String fullPath = filenameAddBaseDir(filename);
 
         // Server returns 1 or -1 based on whether or not the file exists
@@ -132,7 +132,7 @@ public class ServerConnection implements Runnable{
     private void download() throws IOException, ClientError {
         log("Client is requesting to download a file");
 
-        String filename = getFilename();
+        String filename = getFilename(false);
         String fullPath = filenameAddBaseDir(filename);
 
         // Check if file exists
@@ -189,7 +189,7 @@ public class ServerConnection implements Runnable{
         // Start timer
         long startTime = System.currentTimeMillis();
 
-        String fileName = getFilename();
+        String fileName = getFilename(true);
         String fullPath = filenameAddBaseDir(fileName);
         log("Filename: " + fileName);
 
@@ -236,11 +236,13 @@ public class ServerConnection implements Runnable{
         log("Upload finished");
     }
 
-    private String getFilename() throws IOException, ClientError {
+    // Retrieves a filename in the form of short + char array
+    // If a client error occurs during this, then sendErrorBack will determine how the client error is thrown
+    private String getFilename(boolean sendErrorBack) throws IOException, ClientError {
         // Get length of filename
         short fileNameLen = input.readShort();
         if (fileNameLen < 1) {
-            throw new ClientError("Length of filename was not a positive integer (received " + fileNameLen + ")", true);
+            throw new ClientError("Length of filename was not a positive integer (received " + fileNameLen + ")", sendErrorBack);
         }
 
         // Read chars as filename
@@ -263,11 +265,6 @@ public class ServerConnection implements Runnable{
 
 class ClientError extends Exception {
     protected boolean sendErrorBack;
-
-    ClientError(String message) {
-        super(message);
-        this.sendErrorBack = false;
-    }
 
     ClientError(String message, boolean sendErrorBack) {
         super(message);
