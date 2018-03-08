@@ -186,7 +186,8 @@ public class ClientController {
         startTask(task);
     }
 
-    @FXML private void list() {
+    @FXML
+    private void list() {
         Task<Boolean> task = new Task<Boolean>() {
             @Override protected Boolean call() {
                 return conn.list();
@@ -197,13 +198,15 @@ public class ClientController {
         startTask(task);
     }
 
-    @FXML private void quit() {
+    @FXML
+    private void quit() {
         conn.quit();
         conn = null;
         setUIState(false);
     }
 
-    @FXML private void upload() {
+    @FXML
+    private void upload() {
         // Get file
         FileChooser fc = new FileChooser();
         fc.setTitle("Select file");
