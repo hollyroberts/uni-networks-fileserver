@@ -1,5 +1,3 @@
-import org.omg.CORBA.TIMEOUT;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;

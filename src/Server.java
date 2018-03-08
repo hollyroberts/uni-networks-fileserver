@@ -2,16 +2,19 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Server {
-    private static int PORT_NUMBER = 1234;
-    public static String BASE_DIR = "server_files/";
-    public static int TIMEOUT = 5000;
+    // Constants
+    private final static int DEFAULT_PORT = 1234;
+    private final static int DEFAULT_TIMEOUT = 5000;
+    public final static String BASE_DIR = "server_files/";
 
-    private void run() throws Exception {
-        ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-        System.out.println("Server started on port " + PORT_NUMBER);
+    // Configurable shared run time constants (via command line)
+    public static int TIMEOUT;
+
+    private void run(int port, int timeout) throws Exception {
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Server started on port " + port + " with timeout " + timeout + "ms");
 
         int curID = 1;
 
@@ -19,7 +22,7 @@ public class Server {
         while(true){
             try {
                 Socket clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout(TIMEOUT);
+                clientSocket.setSoTimeout(timeout);
                 new Thread(new ServerConnection(clientSocket, curID)).start();
                 curID++;
             } catch (IOException e) {
@@ -41,32 +44,34 @@ public class Server {
         }
 
         // Get user input for configurable options
-        Scanner scanner = new Scanner(System.in);
-
-        // Enter timeout
-        System.out.print("Enter socket timeout in ms (Leave empty for default): ");
-        String timeoutStr = scanner.nextLine();
-
-        try {
-            TIMEOUT = Integer.valueOf(timeoutStr);
-            System.out.println(String.format("Set timeout to %,dms", TIMEOUT));
-        } catch (NumberFormatException e) {
-            System.out.println(String.format("Timeout set to default value of %,dms", TIMEOUT));
-        }
-
-        // Enter port
-        System.out.print("Enter port (Leave empty for default): ");
-        String portStr = scanner.nextLine();
-
-        try {
-            PORT_NUMBER= Integer.valueOf(portStr);
-            System.out.println(String.format("Set port to %,d", PORT_NUMBER));
-        } catch (NumberFormatException e) {
-            System.out.println("Set port to default value of " + PORT_NUMBER);
-        }
+        int port = parseCommandLineInteger(args, 0, "Port number must be a positive integer", DEFAULT_PORT);
+        int timeout = parseCommandLineInteger(args, 1, "Timeout must be a positive integer (ms)", DEFAULT_TIMEOUT);
 
         // Run server
-        scanner.close();
-        new Server().run();
+        new Server().run(port, timeout);
+    }
+
+    // Attempts to read a value from the command line as an integer
+    // Returns the default value if this cannot be done
+    private static int parseCommandLineInteger(String[] args, int index, String errMsg, int defaultVal) {
+        // Return default value if argument not specified
+        if (index >= args.length) {
+            return defaultVal;
+        }
+
+        // Attempt to parse and return the int
+        try {
+            int val = Integer.parseInt(args[index]);
+
+            if (val < 1) {
+                System.out.println(errMsg);
+                return defaultVal;
+            }
+
+            return val;
+        } catch (NumberFormatException e) {
+            System.out.println(errMsg);
+            return defaultVal;
+        }
     }
 }
