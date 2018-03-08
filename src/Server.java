@@ -12,8 +12,15 @@ public class Server {
     // Configurable shared run time constants (via command line)
     public static int TIMEOUT;
 
-    private void run(int port, int timeout) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(port);
+    private void run(int port, int timeout) {
+        // Open port
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (Exception e) {
+            System.out.println("Couldn't open socket. " + e.getMessage());
+            return;
+        }
         System.out.println("Server started on port " + port + " with timeout " + timeout + "ms");
 
         int curID = 1;
@@ -31,7 +38,7 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Create base dir if it doesn't exist
         File bd = new File(BASE_DIR);
         if (!bd.exists()) {
